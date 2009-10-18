@@ -1,0 +1,60 @@
+== Description
+   The file-temp library is an alternate way to handle tempfile generation.
+
+== Requirements
+   ffi 0.5.0 or later
+
+== Synopsis
+   require 'file/temp'
+
+   fh = FileTemp.new
+   fh.puts "hello"
+   fh.close # => Tempfile automatically deleted
+
+   fh = FileTemp.new(false)
+   fh.puts "world"
+   fh.close # => Tempfile still on your filesystem
+
+== Installation
+=== Rubygems
+   gem install file-temp
+   
+=== Standard Installation
+   rake test (optional)
+   rake install
+
+== Motivation
+   Ruby's tempfile.rb is overwrought and susceptible to race conditions. This
+   This library uses your system's native tmpfile() or mkstemp() functions
+   instead of trying to handle race conditions manually via pure Ruby.
+   
+   This library is also more secure because it restricts file permission via
+   umask() for files created with mkstemp().
+
+== Other libraries
+   I am aware of Cian Synnott's ruby-stemp project. However, I don't like the
+   interface, it's GNU-centric (which causes portability issues), and Cian
+   has disabled all the trackers and mailing lists on the RubyForge project
+   site, as well as online SCM access. So, if he doesn't want feedback, I'm
+   not going to waste time with it.
+
+== MS Windows
+   You will need to use the mingw build in order to use this library.
+
+== License
+   Artistic 2.0
+
+== Copyright
+   (C) 2007-2009 Daniel J. Berger
+   All Rights Reserved
+
+== Warranty
+   This library is provided "as is" and without any express or
+   implied warranties, including, without limitation, the implied
+   warranties of merchantability and fitness for a particular purpose.
+
+== Author
+   Daniel J. Berger
+
+== See also
+   tmpfile(), mkstemp(), tmpnam()

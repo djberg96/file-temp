@@ -1,0 +1,7 @@
+* CHANGES
+* MANIFEST
+* README
+* Rakefile
+* file-temp.gemspec
+* lib/file/temp.rb
+* test/test_file_temp.rb

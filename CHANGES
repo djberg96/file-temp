@@ -1,0 +1,20 @@
+= 1.1.0 - ???
+* Now pure Ruby, using FFI.
+* Renamed and refactored the test file slightly.
+* Added an install-pr Rake task for MS Windows.
+* Updated the gemspec.
+
+= 1.0.0 - 12-Apr-2008
+* Added security via umask().
+* Version bump to 1.0.0.
+
+= 0.1.2 - 6-Jun-2007
+* Gemspec fix (forgot the temp.h file - oops).
+* Added an extra test.
+ 
+= 0.1.1 - 2-Jun-2007
+* Core code and test case now work properly on MS Windows.
+* Now uses MS VC++ 8 functions when available (tmpfile_s, _sopen_s).
+
+= 0.1.0 - 1-Jun-2007
+* Initial release.
