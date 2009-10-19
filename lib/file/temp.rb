@@ -66,6 +66,13 @@ class File::Temp < File
   #    fh = File::Temp.new(true, 'rb_file_temp_XXXXXX') => file
   #    fh.puts 'hello world'
   #    fh.close
+  #--
+  # TODO: We're going to have to ditch tmpfile() on MS Windows because it
+  # stupidly creates files in C:/ (root) instead of a temporary directory.
+  # Windows 7 and later will not allow this without admin rights.
+  #
+  # See http://cgit.freedesktop.org/cairo/commit/?id=4fa46e3caaffb54f4419887418d8d0ea39816092
+  # for a possible solution.
   #
   def initialize(delete = true, template = 'rb_file_temp_XXXXXX')
     @fptr = nil
