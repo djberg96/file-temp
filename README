@@ -7,11 +7,11 @@
 == Synopsis
    require 'file/temp'
 
-   fh = FileTemp.new
+   fh = File::Temp.new
    fh.puts "hello"
    fh.close # => Tempfile automatically deleted
 
-   fh = FileTemp.new(false)
+   fh = File::Temp.new(false)
    fh.puts "world"
    fh.close # => Tempfile still on your filesystem
 
