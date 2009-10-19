@@ -25,10 +25,10 @@ class File::Temp < File
     attach_function 'fileno', [:pointer], :int
     attach_function 'mkstemp', [:string], :int
     attach_function 'umask', [:int], :int
+    attach_function 'tmpfile', [], :pointer
   end
 
   attach_function 'fclose', [:pointer], :int
-  attach_function 'tmpfile', [], :pointer
   attach_function 'tmpnam', [:string], :string
 
   public
@@ -117,6 +117,61 @@ class File::Temp < File
   # created one here.
   #
   if WINDOWS
+    # The version of tmpfile() that ships with MS Windows has security
+    # issues on Windows 7 and later, along with undesirable behavior in
+    # general. This is a custom implementation modeled on some code from
+    # the Cairo project.
+    #--
+    # TODO: Add needed function definitions and tests.
+    #
+    def tmpfile
+      buf = 0.chr * 1024 
+
+      if GetTempPathW(buf.length, buf) == 0
+        raise SystemCallError, 'GetTempPath()'
+      end
+
+      file_name = buf.strip
+      buf = 0.chr * 1024
+
+      if GetTempFileNameW(file_name, 'rb_', 0, buf) == 0
+        raise SystemCallError, 'GetTempFileName()'
+      end
+
+      file_name = buf.strip
+
+      handle = CreateFileW(
+        file_name,
+        GENERIC_READ | GENERIC_WRITE,
+        0,
+        nil,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE,
+        nil 
+      )
+
+      if handle == INVALID_HANDLE_VALUE
+        DeleteFileW(file_name)
+        raise SystemCallError, 'CreateFileW()'
+      end
+
+      fd = _open_osfhandle(handle, 0)
+
+      if fd < 0
+        CloseHandle(handle)
+        raise SystemCallError, 'open_osfhandle()'
+      end
+
+      fp = _fdopen(fd, 'w+b')
+
+      if fp.nil?
+        _close(fd)
+        raise SystemCallError, 'fdopen()'
+      end
+
+      fp
+    end
+
     def mkstemp(template)
       flags = RDWR | BINARY | CREAT | EXCL | SHORT_LIVED
       pmode = S_IREAD | S_IWRITE
