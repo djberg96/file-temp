@@ -38,24 +38,22 @@ class File::Temp < File
 
   if WINDOWS
     # The temporary directory used on your system.
-    TMPDIR = ENV['TEMP'] || ENV['TMP'] || "C:\\Windows\\Temp"
+    TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || "C:\\Windows\\Temp"
   else
     # The temporary directory used on your system.
-    TMPDIR = ENV['TEMP'] || ENV['TMP'] || '/tmp'
+    TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || '/tmp'
   end
 
   public
 
-  # Creates a new, anonymous temporary file in your File::Temp::TMPDIR
-  # directory, or /tmp if that cannot be accessed. If your $TMPDIR environment
-  # variable is set, it will be used instead. If $TMPDIR is not writable by
-  # the process, it will resort back to File::Temp::TMPDIR or /tmp.
+  # Creates a new, anonymous, temporary file in your File::Temp::TMPDIR
+  # directory
   #
   # If the +delete+ option is set to true (the default) then the temporary file
   # will be deleted automatically as soon as all references to it are closed.
-  # Otherwise, the file will live on in your $TMPDIR.
+  # Otherwise, the file will live on in your File::Temp::TMPDIR path.
   #
-  # If the +delete+ option is set to false, then the file is *not* deleted. In
+  # If the +delete+ option is set to false, then the file is not deleted. In
   # addition, you can supply a string +template+ that the system replaces with
   # a unique filename. This template should end with 3 to 6 'X' characters.
   # The default template is 'rb_file_temp_XXXXXX'. In this case the temporary
@@ -78,7 +76,7 @@ class File::Temp < File
     else
       begin
         omask = WINDOWS ? _umask(077) : umask(077)
-        fd = mkstemp(template)
+        fd = mkstemp(File.join(TMPDIR, template))
         raise SystemCallError, 'mkstemp()' if fd < 0
       ensure
         WINDOWS ? _umask(omask) : umask(omask)
@@ -87,7 +85,7 @@ class File::Temp < File
 
     super(fd, 'wb+')
   end
-   
+
   # The close method was overridden to ensure the internal file pointer we
   # created in the constructor is closed. It is otherwise identical to the
   # File#close method.
