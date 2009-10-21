@@ -41,14 +41,14 @@ class TC_File_Temp < Test::Unit::TestCase
 
   def test_file_temp_no_delete
     assert_nothing_raised{ @fh = File::Temp.new(false) }
-    assert_true(Dir["#{@dir}/rb_file_temp*"].length == 1)
     assert_nothing_raised{ @fh.print "hello" }
     assert_nothing_raised{ @fh.close }
+    assert_true(Dir["#{@dir}/rb_file_temp*"].length == 1)
   end
 
   def test_file_temp_no_delete_with_template
-    assert_nothing_raised{ @fh = File::Temp.new(false, 'temp_foo_XXXXXX') }
-    assert_true(Dir["#{@dir}/temp_foo*"].length == 1)
+    assert_nothing_raised{ File::Temp.new(false, 'temp_foo_XXXXXX').close }
+    assert_true(Dir["#{@dir}/temp_foo*"].length >= 1)
   end
 
   def test_file_temp_expected_errors
