@@ -16,6 +16,7 @@ class File::Temp < File
     attach_function 'fclose', [:pointer], :int
     attach_function '_fdopen', [:int, :string], :pointer
     attach_function '_fileno', [:pointer], :int
+    attach_function '_mktemp', [:string], :string
     attach_function '_open', [:string, :int, :int], :int
     attach_function '_open_osfhandle', [:long, :int], :int
     attach_function 'tmpnam', [:string], :string
@@ -83,13 +84,6 @@ class File::Temp < File
   #    fh = File::Temp.new(true, 'rb_file_temp_XXXXXX') => file
   #    fh.puts 'hello world'
   #    fh.close
-  #--
-  # TODO: We're going to have to ditch tmpfile() on MS Windows because it
-  # stupidly creates files in C:/ (root) instead of a temporary directory.
-  # Windows 7 and later will not allow this without admin rights.
-  #
-  # See http://cgit.freedesktop.org/cairo/commit/?id=4fa46e3caaffb54f4419887418d8d0ea39816092
-  # for a possible solution.
   #
   def initialize(delete = true, template = 'rb_file_temp_XXXXXX')
     @fptr = nil
@@ -99,7 +93,12 @@ class File::Temp < File
       fd = WINDOWS ? _fileno(@fptr) : fileno(@fptr)
     else
       begin
-        omask = WINDOWS ? _umask(077) : umask(077)
+        if WINDOWS
+          template = _mktemp(template)
+          omask = _umask(077)
+        else
+          omask = umask(077)
+        end
         fd = mkstemp(File.join(TMPDIR, template))
         raise SystemCallError, 'mkstemp()' if fd < 0
       ensure
@@ -135,8 +134,6 @@ class File::Temp < File
     # issues on Windows 7 and later, along with undesirable behavior in
     # general. This is a custom implementation modeled on some code from
     # the Cairo project.
-    #--
-    # TODO: Add needed function definitions and tests.
     #
     def tmpfile
       buf = 1.chr * 1024 

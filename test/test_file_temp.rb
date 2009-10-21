@@ -16,6 +16,9 @@ class TC_File_Temp < Test::Unit::TestCase
     @dir = File::Temp::TMPDIR
     @template = 'file-temp-test-XXXXX'
     @fh = nil
+
+    # Because Dir[] doesn't work right with backslashes
+    @dir = @dir.tr("\\", "/") if Config::CONFIG['host_os'] =~ /mswin|win32|dos|cygwin|mingw/i
   end
 
   def test_file_temp_version
