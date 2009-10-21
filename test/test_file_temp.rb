@@ -51,6 +51,11 @@ class TC_File_Temp < Test::Unit::TestCase
     assert_true(Dir["#{@dir}/temp_foo*"].length >= 1)
   end
 
+  def test_file_temp_no_delete_with_block
+    assert_nothing_raised{ File::Temp.open(false, 'temp_foo_XXXXXX'){ |fh| fh.puts "hello" } }
+    assert_true(Dir["#{@dir}/temp_foo*"].length >= 1)
+  end
+
   def test_file_temp_expected_errors
     assert_raise(TypeError, ArgumentError){ @fh = File::Temp.new(false, 1) }
     assert_raise(ArgumentError){ @fh = File::Temp.new(true, 'temp_bar_XXXXX', 1) }
