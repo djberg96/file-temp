@@ -4,6 +4,8 @@ require 'ffi'
 class File::Temp < File
   extend FFI::Library
 
+  # :stopdoc:
+
   private
 
   # True if operating system is MS Windows
@@ -30,16 +32,17 @@ class File::Temp < File
     attach_function 'GetTempPathA', [:long, :string], :long
     attach_function 'GetTempFileNameA', [:string, :string, :uint, :pointer], :uint
 
-    S_IWRITE = 128
-    S_IREAD = 256
-    BINARY = 0x8000
-    SHORT_LIVED = 0x1000
-    GENERIC_READ = 0x80000000
+    S_IWRITE      = 128
+    S_IREAD       = 256
+    BINARY        = 0x8000
+    SHORT_LIVED   = 0x1000
+    GENERIC_READ  = 0x80000000
     GENERIC_WRITE = 0x40000000
     CREATE_ALWAYS = 2
-    FILE_ATTRIBUTE_NORMAL = 0x00000080
+
+    FILE_ATTRIBUTE_NORMAL     = 0x00000080
     FILE_FLAG_DELETE_ON_CLOSE = 0x04000000
-    INVALID_HANDLE_VALUE = -1
+    INVALID_HANDLE_VALUE      = -1
   else
     attach_function 'fileno', [:pointer], :int
     attach_function 'mkstemp', [:string], :int
@@ -51,14 +54,16 @@ class File::Temp < File
 
   public
 
+  # :startdoc:
+
   # The version of the file-temp library.
   VERSION = '1.1.0'
 
   if WINDOWS
-    # The temporary directory used on your system.
+    # The temporary directory used on MS Windows.
     TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['USERPROFILE'] || "C:\\Windows\\Temp"
   else
-    # The temporary directory used on your system.
+    # The temporary directory used on Unix.
     TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || '/tmp'
   end
 
@@ -130,10 +135,13 @@ class File::Temp < File
   private
 
   if WINDOWS
-    # The version of tmpfile() that ships with MS Windows has security
-    # issues on Windows 7 and later, along with undesirable behavior in
-    # general. This is a custom implementation modeled on some code from
-    # the Cairo project.
+    # The version of tmpfile() implemented by Microsoft is unacceptable.
+    # It attempts to write to C:\ (root) instead of a temporary directory. 
+    # This is not only bad behavior, it won't work on Windows 7 and later
+    # without admin rights due to security restrictions.
+    # 
+    # This is a custom implementation based on some code from the Cairo
+    # project.
     #
     def tmpfile
       buf = 1.chr * 1024 
