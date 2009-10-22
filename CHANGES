@@ -2,7 +2,6 @@
 * Now pure Ruby, using FFI.
 * Fixed RF Bug #26757 - FILE pointer leak. Thanks go to Eric Wong for the spot.
 * Renamed and refactored the test file slightly.
-* Added an install-pr Rake task for MS Windows.
 * Updated the gemspec.
 
 = 1.0.0 - 12-Apr-2008
