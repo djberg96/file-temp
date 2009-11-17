@@ -31,15 +31,12 @@
    This library is also more secure because it restricts file permission via
    umask() for files created with mkstemp().
 
-== Other libraries
-   I am aware of Cian Synnott's ruby-stemp project. However, I don't like the
-   interface, it's GNU-centric (which causes portability issues), and Cian
-   has disabled all the trackers and mailing lists on the RubyForge project
-   site, as well as online SCM access. So, if he doesn't want feedback, I'm
-   not going to waste time with it.
+   Finally, this library subclasses the File class. This means you get almost
+   exactly the same interface as the File class. The only difference is the
+   constructor.
 
 == JRuby
-   As of JRuby 1.3.1 this library will not work with JRuby because it does
+   As of JRuby 1.4.0 this library will not work with JRuby because it does
    not support low level systems programming.
 
 == MS Windows
