@@ -1,26 +1,26 @@
 require 'rubygems'
 
-Gem::Specification.new do |gem|
-   gem.name      = 'file-temp'
-   gem.version   = '1.1.1'
-   gem.author    = 'Daniel J. Berger'
-   gem.email     = 'djberg96@gmail.com'
-   gem.homepage  = 'http://www.rubyforge.org/projects/shards'
-   gem.summary   = 'An alternative way to generate temp files'
-   gem.test_file = 'test/test_file_temp.rb'
-   gem.has_rdoc  = true
-   gem.files     = Dir['**/*'].delete_if{ |item| item.include?('CVS') }
+Gem::Specification.new do |spec|
+  spec.name      = 'file-temp'
+  spec.version   = '1.1.2'
+  spec.author    = 'Daniel J. Berger'
+  spec.email     = 'djberg96@gmail.com'
+  spec.homepage  = 'http://www.rubyforge.org/projects/shards'
+  spec.summary   = 'An alternative way to generate temp files'
+  spec.test_file = 'test/test_file_temp.rb'
+  spec.has_rdoc  = true
+  spec.files     = Dir['**/*'].delete_if{ |item| item.include?('git') }
 
-   gem.extra_rdoc_files = ['CHANGES', 'README', 'MANIFEST']
-   gem.rubyforge_project = 'shards'
-   gem.required_ruby_version = '>= 1.8.6'
+  spec.extra_rdoc_files = ['CHANGES', 'README', 'MANIFEST']
+  spec.rubyforge_project = 'shards'
+  spec.required_ruby_version = '>= 1.8.6'
 
-   gem.add_dependency('ffi', '>= 0.5.0')
-   gem.add_development_dependency('test-unit', '>= 2.0.3')
+  spec.add_dependency('ffi', '>= 0.5.0')
+  spec.add_development_dependency('test-unit', '>= 2.0.3')
 
-   gem.description = <<-EOF
-      The file-temp library provides an alternative approach to generating
-      temporary files. Features included improved security, a superior
-      interface, and better support for MS Windows.
-   EOF
+  spec.description = <<-EOF
+    The file-temp library provides an alternative approach to generating
+    temporary files. Features included improved security, a superior
+    interface, and better support for MS Windows.
+  EOF
 end
