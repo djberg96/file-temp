@@ -57,7 +57,7 @@ class File::Temp < File
   # :startdoc:
 
   # The version of the file-temp library.
-  VERSION = '1.1.1'
+  VERSION = '1.1.2'
 
   if WINDOWS
     # The temporary directory used on MS Windows.
