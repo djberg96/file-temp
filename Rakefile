@@ -1,54 +1,64 @@
 require 'rake'
 require 'rake/testtask'
-require 'rbconfig'
 
-desc 'Install the file-temp library (non-gem)'
-task :install do
-  dir = File.join(CONFIG['sitelibdir'], 'file')
-  Dir.mkdir(dir) unless File.exists?(dir)
-  file = 'lib/file/temp.rb'
-  FileUtils.cp_r(file, dir, :verbose => true)
+desc 'Remove all gem and archive files from the project'
+task :clean do
+  Dir['*.gem'].each{ |f| File.delete(f) }
+  Dir['*.tar'].each{ |f| File.delete(f) }
+  Dir['*.zip'].each{ |f| File.delete(f) }
+  Dir['*.gz'].each{ |f| File.delete(f) }
+  Dir['*.bz2'].each{ |f| File.delete(f) }
 end
 
-desc 'Build the gem'
-task :gem do
+namespace 'gem' do
+  desc 'Create the file-temp gem'
+  task :create => [:clean] do
+    spec = eval(IO.read('file-temp.gemspec'))
+    Gem::Builder.new(spec).build
+  end
+
+  desc 'Install the file-temp gem'
+  task :install => [:create] do
+     file = Dir["*.gem"].first
+     sh "gem install #{file}"
+  end
+end
+
+# Export the contents of the library to an archive. Note that this requires
+# presence of the .gitattributes file in order to prevent the .git contents
+# from being included.
+#
+# It also appears that I must add a trailing slash to the prefix manually.
+# As of git 1.6.4.3 it does not automaticaly add it, despite what the docs
+# say.
+#
+namespace 'export' do
   spec = eval(IO.read('file-temp.gemspec'))
-  Gem::Builder.new(spec).build
+  file = 'file-temp-' + spec.version.to_s
+  pref = file + '/' # Git does not add the trailing slash, despite what the docs say.
+
+  desc 'Export to a .tar.gz file'
+  task :gzip => [:clean] do
+    file += '.tar'
+    sh "git archive --prefix #{pref} --output #{file} master"
+    sh "gzip #{file}"
+  end
+
+  desc 'Export to a .tar.bz2 file'
+  task :bzip2 => [:clean] do
+    file += '.tar'
+    sh "git archive --prefix #{pref} --output #{file} master"
+    sh "bzip2 -f #{file}"
+  end
+
+  desc 'Export to a .zip file'
+  task :zip => [:clean] do
+    file += '.zip'
+    sh "git archive --prefix #{pref} --output #{file} --format zip master"
+  end
 end
-
-desc 'Install the file-temp library as a gem'
-task :install_gem => [:gem] do
-   file = Dir["*.gem"].first
-   sh "gem install #{file}"
-end
-
-desc 'Export the git archive to a .zip, .gz and .bz2 file in your home directory'
-task :export, :output_file do |t, args|
-  file = args[:output_file]
-
-  sh "git archive --prefix #{file}/ --output #{ENV['HOME']}/#{file}.tar master"
-
-  Dir.chdir(ENV['HOME']) do
-    sh "gzip -f #{ENV['HOME']}/#{file}.tar"
-  end
-
-  sh "git archive --prefix #{file}/ --output #{ENV['HOME']}/#{file}.tar master"
-
-  Dir.chdir(ENV['HOME']) do
-    sh "bzip2 -f #{ENV['HOME']}/#{file}.tar"
-  end
-  
-  sh "git archive --prefix #{file}/ --output #{ENV['HOME']}/#{file}.zip --format zip master"
-
-  Dir.chdir(ENV['HOME']) do
-    sh "unzip #{file}.zip"
-    Dir.chdir(file) do
-      sh "rake gem"
-    end
-  end
-end  
 
 Rake::TestTask.new do |t|
-   t.verbose = true
-   t.warning = true
+  t.verbose = true
+  t.warning = true
 end
