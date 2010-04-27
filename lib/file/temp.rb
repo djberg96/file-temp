@@ -44,6 +44,8 @@ class File::Temp < File
     FILE_FLAG_DELETE_ON_CLOSE = 0x04000000
     INVALID_HANDLE_VALUE      = -1
   else
+    ffi_lib 'libc'
+
     attach_function 'fileno', [:pointer], :int
     attach_function 'mkstemp', [:string], :int
     attach_function 'umask', [:int], :int
