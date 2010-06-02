@@ -44,7 +44,7 @@ class File::Temp < File
     FILE_FLAG_DELETE_ON_CLOSE = 0x04000000
     INVALID_HANDLE_VALUE      = -1
   else
-    ffi_lib 'libc'
+    ffi_lib FFI::Library::LIBC
 
     attach_function 'fileno', [:pointer], :int
     attach_function 'mkstemp', [:string], :int
@@ -59,7 +59,7 @@ class File::Temp < File
   # :startdoc:
 
   # The version of the file-temp library.
-  VERSION = '1.1.2'
+  VERSION = '1.1.3'
 
   if WINDOWS
     # The temporary directory used on MS Windows.
