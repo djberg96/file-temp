@@ -22,7 +22,7 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   def test_file_temp_version
-    assert_equal('1.1.3', File::Temp::VERSION)
+    assert_equal('1.1.4', File::Temp::VERSION)
   end
 
   def test_file_temp_threaded

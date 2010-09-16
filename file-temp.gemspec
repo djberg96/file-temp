@@ -2,8 +2,9 @@ require 'rubygems'
 
 Gem::Specification.new do |spec|
   spec.name      = 'file-temp'
-  spec.version   = '1.1.3'
+  spec.version   = '1.1.4'
   spec.author    = 'Daniel J. Berger'
+  spec.license   = 'Artistic 2.0'
   spec.email     = 'djberg96@gmail.com'
   spec.homepage  = 'http://www.rubyforge.org/projects/shards'
   spec.summary   = 'An alternative way to generate temp files'

@@ -59,7 +59,7 @@ class File::Temp < File
   # :startdoc:
 
   # The version of the file-temp library.
-  VERSION = '1.1.3'
+  VERSION = '1.1.4'
 
   if WINDOWS
     # The temporary directory used on MS Windows.
@@ -125,13 +125,16 @@ class File::Temp < File
     fclose(@fptr) if @fptr
   end
 
-  # Generates a unique file name, prefixed with the value of the
-  # File::Temp::TMPDIR constant.
+  # Generates a unique file name.
   #
   # Note that a file is not actually generated on the filesystem.
   #
   def self.temp_name
-    TMPDIR + tmpnam(nil) << '.tmp'
+    if WINDOWS
+      TMPDIR + tmpnam(nil) << '.tmp'
+    else
+      tmpnam(nil) << '.tmp'
+    end
   end
 
   private
