@@ -1,14 +1,9 @@
 require 'rake'
+require 'rake/clean'
 require 'rake/testtask'
 
-desc 'Remove all gem and archive files from the project'
-task :clean do
-  Dir['*.gem'].each{ |f| File.delete(f) }
-  Dir['*.tar'].each{ |f| File.delete(f) }
-  Dir['*.zip'].each{ |f| File.delete(f) }
-  Dir['*.gz'].each{ |f| File.delete(f) }
-  Dir['*.bz2'].each{ |f| File.delete(f) }
-end
+CLEAN.include('**/*.tar', '**/*.zip', '**/*.gz', '**/*.bz2')
+CLEAN.include('**/*.rbc', '**/*.gem')
 
 namespace 'gem' do
   desc 'Create the file-temp gem'
