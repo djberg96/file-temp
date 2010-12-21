@@ -106,7 +106,8 @@ class File::Temp < File
         else
           omask = umask(077)
         end
-        fd = mkstemp(File.join(TMPDIR, template))
+        @path = File.join(TMPDIR, template)
+        fd = mkstemp(@path)
         raise SystemCallError, 'mkstemp()' if fd < 0
       ensure
         WINDOWS ? _umask(omask) : umask(omask)
@@ -115,6 +116,8 @@ class File::Temp < File
 
     super(fd, 'wb+')
   end
+
+  attr_accessor :path
 
   # The close method was overridden to ensure the internal file pointer we
   # created in the constructor is closed. It is otherwise identical to the
