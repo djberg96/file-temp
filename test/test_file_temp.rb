@@ -47,6 +47,8 @@ class TC_File_Temp < Test::Unit::TestCase
     assert_nothing_raised{ @fh.print "hello" }
     assert_nothing_raised{ @fh.close }
     assert_true(Dir["#{@dir}/rb_file_temp*"].length == 1)
+    assert_not_nil(@fh.path)
+    assert_match(/^#{Regexp.escape(File.join(@dir, 'rb_file_temp_'))}.{6}$/, @fh.path)
   end
 
   def test_file_temp_no_delete_with_template
