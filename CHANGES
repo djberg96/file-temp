@@ -1,3 +1,8 @@
+= 1.1.5 - 17-Jul-2011
+* Now stores file path information if the file is retained on the filesystem.
+  Thanks go to joerixaop for the patch.
+* The TMPDIR fallback determination on Windows is no longer hard coded.
+
 = 1.1.4 - 16-Sep-2010
 * The File::Temp.temp_name method has been altered on Unix systems. It
   no longer prefixes TMPDIR to the name since it was redundant and could
