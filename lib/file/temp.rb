@@ -9,7 +9,7 @@ class File::Temp < File
   private
 
   # True if operating system is MS Windows
-  WINDOWS = Config::CONFIG['host_os'] =~ /mswin|win32|dos|cygwin|mingw/i
+  WINDOWS = Config::CONFIG['host_os'] =~ /mswin|win32|dos|cygwin|mingw|windows/i
 
   if WINDOWS
     ffi_lib 'msvcrt'
@@ -59,17 +59,19 @@ class File::Temp < File
   # :startdoc:
 
   # The version of the file-temp library.
-  VERSION = '1.1.4'
+  VERSION = '1.1.5'
 
   if WINDOWS
     # The temporary directory used on MS Windows.
-    TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['USERPROFILE'] || "C:\\Windows\\Temp"
+    TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['USERPROFILE'] || get_temp_path()
   else
     # The temporary directory used on Unix.
     TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || '/tmp'
   end
 
-  public
+  # The name of the file. This is only retained if the first argument to the
+  # constructor is false.
+  attr_reader :path
 
   # Creates a new, anonymous, temporary file in your File::Temp::TMPDIR
   # directory
@@ -87,7 +89,7 @@ class File::Temp < File
   # The +template+ argument is ignored if the +delete+ argument is true.
   #
   # Example:
-  #  
+  #
   #    fh = File::Temp.new(true, 'rb_file_temp_XXXXXX') => file
   #    fh.puts 'hello world'
   #    fh.close
@@ -106,7 +108,10 @@ class File::Temp < File
         else
           omask = umask(077)
         end
-        fd = mkstemp(File.join(TMPDIR, template))
+
+        @path = File.join(TMPDIR, template)
+        fd = mkstemp(@path)
+
         raise SystemCallError, 'mkstemp()' if fd < 0
       ensure
         WINDOWS ? _umask(omask) : umask(omask)
@@ -140,22 +145,26 @@ class File::Temp < File
   private
 
   if WINDOWS
-    # The version of tmpfile() implemented by Microsoft is unacceptable.
-    # It attempts to write to C:\ (root) instead of a temporary directory. 
-    # This is not only bad behavior, it won't work on Windows 7 and later
-    # without admin rights due to security restrictions.
-    # 
-    # This is a custom implementation based on some code from the Cairo
-    # project.
-    #
-    def tmpfile
-      buf = 1.chr * 1024 
+    def get_temp_path
+      buf = 1.chr * 1024
 
       if GetTempPathA(buf.length, buf) == 0
         raise SystemCallError, 'GetTempPath()'
       end
 
-      file_name = buf[ /^[^\0]*/ ].chop # remove trailing slash
+      buf[ /^[^\0]*/ ].chop # remove trailing slash
+    end
+
+    # The version of tmpfile() implemented by Microsoft is unacceptable.
+    # It attempts to write to C:\ (root) instead of a temporary directory.
+    # This is not only bad behavior, it won't work on Windows 7 and later
+    # without admin rights due to security restrictions.
+    #
+    # This is a custom implementation based on some code from the Cairo
+    # project.
+    #
+    def tmpfile
+      file_name = get_temp_path()
       buf = 1.chr * 1024
 
       if GetTempFileNameA(file_name, 'rb_', 0, buf) == 0
@@ -204,9 +213,9 @@ class File::Temp < File
       pmode = S_IREAD | S_IWRITE
 
       fd = _open(template, flags, pmode)
-      
+
       raise SystemCallError, 'mkstemp()' if fd < 0
-      
+
       fd
     end
   end

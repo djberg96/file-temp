@@ -11,18 +11,20 @@ require 'test/unit'
 require 'file/temp'
 require 'rbconfig'
 
-class TC_File_Temp < Test::Unit::TestCase 
+class TC_File_Temp < Test::Unit::TestCase
+  WINDOWS = Config::CONFIG['host_os'] =~ /mswin|win32|msdos|cygwin|mingw|windows/i
+
   def setup
     @dir = File::Temp::TMPDIR
     @template = 'file-temp-test-XXXXX'
     @fh = nil
 
     # Because Dir[] doesn't work right with backslashes
-    @dir = @dir.tr("\\", "/") if Config::CONFIG['host_os'] =~ /mswin|win32|msdos|cygwin|mingw/i
+    @dir = @dir.tr("\\", "/") if WINDOWS
   end
 
   def test_file_temp_version
-    assert_equal('1.1.4', File::Temp::VERSION)
+    assert_equal('1.1.5', File::Temp::VERSION)
   end
 
   def test_file_temp_threaded
@@ -72,6 +74,21 @@ class TC_File_Temp < Test::Unit::TestCase
 
   def test_file_temp_name
     assert_equal('.tmp', File.extname(File::Temp.temp_name))
+  end
+
+  def test_file_temp_path_basic_functionality
+    temp = File::Temp.new
+    assert_respond_to(temp, :path)
+  end
+
+  def test_file_temp_path_is_nil_if_delete_option_is_true
+    temp = File::Temp.new
+    assert_nil(temp.path)
+  end
+
+  def test_file_temp_path_is_not_nil_if_delete_option_is_false
+    temp = File::Temp.new(false)
+    assert_not_nil(temp.path)
   end
 
   def teardown
