@@ -4,6 +4,9 @@
 == Requirements
    ffi 0.5.0 or later
 
+== Installation
+   gem install file-temp
+
 == Synopsis
    require 'file/temp'
 
@@ -14,14 +17,6 @@
    fh = File::Temp.new(false)
    fh.puts "world"
    fh.close # => Tempfile still on your filesystem
-
-== Installation
-=== Rubygems
-   gem install file-temp
-   
-=== Standard Installation
-   rake test (optional)
-   rake install
 
 == Motivation
    Ruby's tempfile.rb is overwrought and susceptible to race conditions. This
@@ -36,8 +31,8 @@
    constructor.
 
 == JRuby
-   As of JRuby 1.4.0 this library will not work with JRuby because it does
-   not support low level systems programming.
+   I'm afraid this library will not work with JRuby due to limitations
+   of JRuby itself.
 
 == MS Windows
    You may need to use the mingw build in order to use this library.
@@ -46,7 +41,7 @@
    Artistic 2.0
 
 == Copyright
-   (C) 2007-2009 Daniel J. Berger
+   (C) 2007-2012 Daniel J. Berger
    All Rights Reserved
 
 == Warranty
