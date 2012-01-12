@@ -1,3 +1,9 @@
+= 1.2.0 - ???
+* Removed the old FileTemp alias for File::Temp. It was deprecated and
+  has now been officially removed.
+* Made the FFI functions private.
+* Some refactoring of the custom internal Windows functions.
+
 = 1.1.5 - 17-Jul-2011
 * Now stores file path information if the file is retained on the filesystem.
   Thanks go to joerixaop for the patch.
