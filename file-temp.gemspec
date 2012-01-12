@@ -2,7 +2,7 @@ require 'rubygems'
 
 Gem::Specification.new do |spec|
   spec.name      = 'file-temp'
-  spec.version   = '1.1.5'
+  spec.version   = '1.2.0'
   spec.author    = 'Daniel J. Berger'
   spec.license   = 'Artistic 2.0'
   spec.email     = 'djberg96@gmail.com'
@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.rubyforge_project = 'shards'
   spec.required_ruby_version = '>= 1.8.6'
 
-  spec.add_dependency('ffi', '>= 0.5.0')
+  spec.add_dependency('ffi', '>= 1.0.0')
   spec.add_development_dependency('test-unit', '>= 2.2.0')
 
   spec.description = <<-EOF
