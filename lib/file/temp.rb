@@ -1,4 +1,3 @@
-require 'rbconfig'
 require 'ffi'
 
 class File::Temp < File
@@ -8,10 +7,7 @@ class File::Temp < File
 
   private
 
-  # True if operating system is MS Windows
-  WINDOWS = Config::CONFIG['host_os'] =~ /mswin|win32|dos|cygwin|mingw|windows/i
-
-  if WINDOWS
+  if File::ALT_SEPARATOR
     ffi_lib 'msvcrt'
 
     attach_function '_close', [:int], :int
@@ -26,11 +22,14 @@ class File::Temp < File
 
     ffi_lib 'kernel32'
 
-    attach_function 'CloseHandle', [:long], :bool
-    attach_function 'CreateFileA', [:string, :ulong, :ulong, :pointer, :ulong, :ulong, :ulong], :long
-    attach_function 'DeleteFileA', [:string], :bool
-    attach_function 'GetTempPathA', [:long, :string], :long
-    attach_function 'GetTempFileNameA', [:string, :string, :uint, :pointer], :uint
+    attach_function :CloseHandle, [:long], :bool
+    attach_function :CreateFileA, [:string, :ulong, :ulong, :pointer, :ulong, :ulong, :ulong], :long
+    attach_function :DeleteFileA, [:string], :bool
+    attach_function :GetTempPathA, [:long, :string], :long
+    attach_function :GetTempFileNameA, [:string, :string, :uint, :pointer], :uint
+
+    private_class_method :CloseHandle, :CreateFileA, :DeleteFileA
+    private_class_method :GetTempPathA, :GetTempFileNameA
 
     S_IWRITE      = 128
     S_IREAD       = 256
@@ -46,12 +45,14 @@ class File::Temp < File
   else
     ffi_lib FFI::Library::LIBC
 
-    attach_function 'fileno', [:pointer], :int
-    attach_function 'mkstemp', [:string], :int
-    attach_function 'umask', [:int], :int
-    attach_function 'tmpfile', [], :pointer
-    attach_function 'fclose', [:pointer], :int
-    attach_function 'tmpnam', [:string], :string
+    attach_function :fileno, [:pointer], :int
+    attach_function :mkstemp, [:string], :int
+    attach_function :umask, [:int], :int
+    attach_function :tmpfile, [], :pointer
+    attach_function :fclose, [:pointer], :int
+    attach_function :tmpnam, [:string], :string
+
+    private_class_method :fileno, :mkstemp, :umask, :tmpfile, :fclose, :tmpnam
   end
 
   public
@@ -59,13 +60,12 @@ class File::Temp < File
   # :startdoc:
 
   # The version of the file-temp library.
-  VERSION = '1.1.5'
+  VERSION = '1.2.0'
 
-  if WINDOWS
-    # The temporary directory used on MS Windows.
+  # The temporary directory used on MS Windows or Unix.
+  if File::ALT_SEPARATOR
     TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['USERPROFILE'] || get_temp_path()
   else
-    # The temporary directory used on Unix.
     TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || '/tmp'
   end
 
@@ -99,10 +99,10 @@ class File::Temp < File
 
     if delete
       @fptr = tmpfile()
-      fd = WINDOWS ? _fileno(@fptr) : fileno(@fptr)
+      fd = File::ALT_SEPARATOR ? _fileno(@fptr) : fileno(@fptr)
     else
       begin
-        if WINDOWS
+        if File::ALT_SEPARATOR
           template = _mktemp(template)
           omask = _umask(077)
         else
@@ -114,7 +114,7 @@ class File::Temp < File
 
         raise SystemCallError, 'mkstemp()' if fd < 0
       ensure
-        WINDOWS ? _umask(omask) : umask(omask)
+        File::ALT_SEPARATOR ? _umask(omask) : umask(omask)
       end
     end
 
@@ -135,7 +135,7 @@ class File::Temp < File
   # Note that a file is not actually generated on the filesystem.
   #
   def self.temp_name
-    if WINDOWS
+    if File::ALT_SEPARATOR
       TMPDIR + tmpnam(nil) << '.tmp'
     else
       tmpnam(nil) << '.tmp'
@@ -144,7 +144,7 @@ class File::Temp < File
 
   private
 
-  if WINDOWS
+  if File::ALT_SEPARATOR
     def get_temp_path
       buf = 1.chr * 1024
 
@@ -220,6 +220,3 @@ class File::Temp < File
     end
   end
 end
-
-# For backwards compatability
-FileTemp = File::Temp

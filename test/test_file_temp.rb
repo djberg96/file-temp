@@ -9,10 +9,9 @@ gem 'test-unit'
 
 require 'test/unit'
 require 'file/temp'
-require 'rbconfig'
 
 class TC_File_Temp < Test::Unit::TestCase
-  WINDOWS = Config::CONFIG['host_os'] =~ /mswin|win32|msdos|cygwin|mingw|windows/i
+  WINDOWS = File::ALT_SEPARATOR
 
   def setup
     @dir = File::Temp::TMPDIR
@@ -24,7 +23,7 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   def test_file_temp_version
-    assert_equal('1.1.5', File::Temp::VERSION)
+    assert_equal('1.2.0', File::Temp::VERSION)
   end
 
   def test_file_temp_threaded
@@ -89,6 +88,20 @@ class TC_File_Temp < Test::Unit::TestCase
   def test_file_temp_path_is_not_nil_if_delete_option_is_false
     temp = File::Temp.new(false)
     assert_not_nil(temp.path)
+  end
+
+  def test_ffi_functions_are_private
+    methods = File::Temp.methods(false).map{ |e| e.to_s }
+    assert_false(File::Temp.methods.include?('fileno'))
+    assert_false(File::Temp.methods.include?('mkstemp'))
+    assert_false(File::Temp.methods.include?('umask'))
+    assert_false(File::Temp.methods.include?('fclose'))
+    assert_false(File::Temp.methods.include?('tmpnam'))
+    assert_false(File::Temp.methods.include?('CloseHandle'))
+    assert_false(File::Temp.methods.include?('CreateFileA'))
+    assert_false(File::Temp.methods.include?('DeleteFileA'))
+    assert_false(File::Temp.methods.include?('GetTempPathA'))
+    assert_false(File::Temp.methods.include?('GetTempFileNameA'))
   end
 
   def teardown
