@@ -166,13 +166,13 @@ class File::Temp < File
     #
     def tmpfile
       file_name = get_temp_path()
-      buf = 1.chr * 1024
+      buf = FFI::MemoryPointer.new(:char, 1024)
 
       if GetTempFileNameA(file_name, 'rb_', 0, buf) == 0
         raise SystemCallError, 'GetTempFileName()'
       end
 
-      file_name = buf[ /^[^\0]*/ ]
+      file_name = buf.read_string
 
       handle = CreateFileA(
         file_name,
