@@ -28,6 +28,7 @@ class File::Temp < File
     attach_function :GetTempPathA, [:long, :pointer], :long
     attach_function :GetTempFileNameA, [:string, :string, :uint, :pointer], :uint
 
+    private_class_method :_close, :_fdopen, :_mktemp, :_open, :_open_osfhandle
     private_class_method :CloseHandle, :CreateFileA, :DeleteFileA
     private_class_method :GetTempPathA, :GetTempFileNameA
 
