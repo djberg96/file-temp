@@ -1,4 +1,5 @@
 require 'ffi'
+require 'tmpdir'
 
 class File::Temp < File
   extend FFI::Library
@@ -68,9 +69,9 @@ class File::Temp < File
 
   # The temporary directory used on MS Windows or Unix.
   if File::ALT_SEPARATOR
-    TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['USERPROFILE'] || get_temp_path()
+    TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['USERPROFILE'] || Dir.tmpdir
   else
-    TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || '/tmp'
+    TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || Dir.tmpdir
   end
 
   # The name of the file. This is only retained if the first argument to the
