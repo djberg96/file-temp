@@ -11,14 +11,14 @@ class File::Temp < File
     ffi_lib 'msvcrt'
 
     attach_function '_close', [:int], :int
-    attach_function 'fclose', [:pointer], :int
+    attach_function :fclose, [:pointer], :int
     attach_function '_fdopen', [:int, :string], :pointer
-    attach_function '_fileno', [:pointer], :int
+    attach_function :fileno, :_fileno, [:pointer], :int
     attach_function '_mktemp', [:string], :string
     attach_function '_open', [:string, :int, :int], :int
     attach_function '_open_osfhandle', [:long, :int], :int
-    attach_function 'tmpnam', [:string], :string
-    attach_function '_umask', [:int], :int
+    attach_function :tmpnam, [:string], :string
+    attach_function :umask, :_umask, [:int], :int
 
     ffi_lib 'kernel32'
 
@@ -52,8 +52,10 @@ class File::Temp < File
     attach_function :fclose, [:pointer], :int
     attach_function :tmpnam, [:string], :string
 
-    private_class_method :fileno, :mkstemp, :umask, :tmpfile, :fclose, :tmpnam
+    private_class_method :mkstemp, :tmpfile
   end
+
+  private_class_method :fclose, :fileno, :tmpnam, :umask
 
   public
 
@@ -99,22 +101,21 @@ class File::Temp < File
 
     if delete
       @fptr = tmpfile()
-      fd = File::ALT_SEPARATOR ? _fileno(@fptr) : fileno(@fptr)
+      fd = fileno(@fptr)
     else
       begin
         if File::ALT_SEPARATOR
           template = _mktemp(template)
-          omask = _umask(077)
-        else
-          omask = umask(077)
         end
+
+        omask = umask(077)
 
         @path = File.join(TMPDIR, template)
         fd = mkstemp(@path)
 
         raise SystemCallError, 'mkstemp()' if fd < 0
       ensure
-        File::ALT_SEPARATOR ? _umask(omask) : umask(omask)
+        umask(omask)
       end
     end
 
