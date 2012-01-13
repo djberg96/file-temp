@@ -96,6 +96,7 @@ class TC_File_Temp < Test::Unit::TestCase
     assert_false(File::Temp.methods.include?('mkstemp'))
     assert_false(File::Temp.methods.include?('_umask'))
     assert_false(File::Temp.methods.include?('fclose'))
+    assert_false(File::Temp.methods.include?('strerror'))
     assert_false(File::Temp.methods.include?('tmpnam'))
     assert_false(File::Temp.methods.include?('CloseHandle'))
     assert_false(File::Temp.methods.include?('CreateFileA'))
