@@ -178,7 +178,7 @@ class File::Temp < File
       buf = FFI::MemoryPointer.new(:char, 1024)
 
       if GetTempPathA(buf.size, buf) == 0
-        raise SystemCallError, 'GetTempPath function failed: ' + get_error
+        raise SystemCallError, 'GetTempPathA function failed: ' + get_error
       end
 
       buf.read_string.chop # remove trailing slash
@@ -197,7 +197,7 @@ class File::Temp < File
       buf = FFI::MemoryPointer.new(:char, 1024)
 
       if GetTempFileNameA(file_name, 'rb_', 0, buf) == 0
-        raise SystemCallError, 'GetTempFileName function failed: ' + get_error
+        raise SystemCallError, 'GetTempFileNameA function failed: ' + get_error
       end
 
       file_name = buf.read_string
@@ -214,14 +214,14 @@ class File::Temp < File
 
       if handle == INVALID_HANDLE_VALUE
         DeleteFileA(file_name)
-        raise SystemCallError, 'CreateFile function failed: ' + get_error
+        raise SystemCallError, 'CreateFileA function failed: ' + get_error
       end
 
       fd = _open_osfhandle(handle, 0)
 
       if fd < 0
         CloseHandle(handle)
-        raise SystemCallError, 'open_osfhandle function failed: ' + get_error
+        raise SystemCallError, '_open_osfhandle function failed: ' + get_error
       end
 
       fp = _fdopen(fd, 'w+b')
@@ -244,7 +244,7 @@ class File::Temp < File
       fd = _open(template, flags, pmode)
 
       if fd < 0
-        raise SystemCallError, 'mkstemp function failed: ' + get_error
+        raise SystemCallError, '_open function failed: ' + get_error
       end
 
       fd
