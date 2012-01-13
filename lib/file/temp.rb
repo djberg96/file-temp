@@ -114,6 +114,10 @@ class File::Temp < File
       begin
         if File::ALT_SEPARATOR
           template = _mktemp(template)
+
+          if template.nil?
+            raise SystemCallError, '_mktemp function failed: ' + get_error
+          end
         end
 
         omask = _umask(077)
