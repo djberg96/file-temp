@@ -92,9 +92,9 @@ class TC_File_Temp < Test::Unit::TestCase
 
   def test_ffi_functions_are_private
     methods = File::Temp.methods(false).map{ |e| e.to_s }
-    assert_false(File::Temp.methods.include?('fileno'))
+    assert_false(File::Temp.methods.include?('_fileno'))
     assert_false(File::Temp.methods.include?('mkstemp'))
-    assert_false(File::Temp.methods.include?('umask'))
+    assert_false(File::Temp.methods.include?('_umask'))
     assert_false(File::Temp.methods.include?('fclose'))
     assert_false(File::Temp.methods.include?('tmpnam'))
     assert_false(File::Temp.methods.include?('CloseHandle'))
