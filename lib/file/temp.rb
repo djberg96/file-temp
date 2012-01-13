@@ -25,7 +25,7 @@ class File::Temp < File
     attach_function :CloseHandle, [:long], :bool
     attach_function :CreateFileA, [:string, :ulong, :ulong, :pointer, :ulong, :ulong, :ulong], :long
     attach_function :DeleteFileA, [:string], :bool
-    attach_function :GetTempPathA, [:long, :string], :long
+    attach_function :GetTempPathA, [:long, :pointer], :long
     attach_function :GetTempFileNameA, [:string, :string, :uint, :pointer], :uint
 
     private_class_method :CloseHandle, :CreateFileA, :DeleteFileA
@@ -147,13 +147,13 @@ class File::Temp < File
 
   if File::ALT_SEPARATOR
     def get_temp_path
-      buf = 1.chr * 1024
+      buf = FFI::MemoryPointer.new(:char, 1024)
 
-      if GetTempPathA(buf.length, buf) == 0
+      if GetTempPathA(buf.size, buf) == 0
         raise SystemCallError, 'GetTempPath()'
       end
 
-      buf[ /^[^\0]*/ ].chop # remove trailing slash
+      buf.read_string.chop # remove trailing slash
     end
 
     # The version of tmpfile() implemented by Microsoft is unacceptable.
