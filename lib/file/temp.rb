@@ -46,14 +46,15 @@ class File::Temp < File
   else
     ffi_lib FFI::Library::LIBC
 
+    attach_function :fclose, [:pointer], :int
     attach_function :_fileno, :fileno, [:pointer], :int
     attach_function :mkstemp, [:string], :int
-    attach_function :_umask, :umask, [:int], :int
+    attach_function :strerror, [:int], :string
     attach_function :tmpfile, [], :pointer
-    attach_function :fclose, [:pointer], :int
     attach_function :tmpnam, [:string], :string
+    attach_function :_umask, :umask, [:int], :int
 
-    private_class_method :mkstemp, :tmpfile
+    private_class_method :mkstemp, :strerror, :tmpfile
   end
 
   private_class_method :fclose, :_fileno, :tmpnam, :_umask
@@ -114,7 +115,9 @@ class File::Temp < File
         @path = File.join(TMPDIR, template)
         fd = mkstemp(@path)
 
-        raise SystemCallError, 'mkstemp()' if fd < 0
+        if fd < 0
+          raise SystemCallError, 'mkstemp function failed: ' + strerror(FFI.errno)
+        end
       ensure
         _umask(omask)
       end
