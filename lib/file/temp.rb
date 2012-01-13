@@ -10,13 +10,13 @@ class File::Temp < File
   if File::ALT_SEPARATOR
     ffi_lib 'msvcrt'
 
-    attach_function '_close', [:int], :int
+    attach_function :_close, [:int], :int
     attach_function :fclose, [:pointer], :int
-    attach_function '_fdopen', [:int, :string], :pointer
+    attach_function :_fdopen, [:int, :string], :pointer
     attach_function :fileno, :_fileno, [:pointer], :int
-    attach_function '_mktemp', [:string], :string
-    attach_function '_open', [:string, :int, :int], :int
-    attach_function '_open_osfhandle', [:long, :int], :int
+    attach_function :_mktemp, [:string], :string
+    attach_function :_open, [:string, :int, :int], :int
+    attach_function :_open_osfhandle, [:long, :int], :int
     attach_function :tmpnam, [:string], :string
     attach_function :umask, :_umask, [:int], :int
 
