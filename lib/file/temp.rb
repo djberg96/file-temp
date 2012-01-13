@@ -19,7 +19,6 @@ class File::Temp < File
     attach_function :_open, [:string, :int, :int], :int
     attach_function :_open_osfhandle, [:long, :int], :int
     attach_function :tmpnam, [:string], :string
-    attach_function :_umask, [:int], :int
 
     ffi_lib 'kernel32'
 
@@ -58,12 +57,11 @@ class File::Temp < File
     attach_function :strerror, [:int], :string
     attach_function :tmpfile, [], :pointer
     attach_function :tmpnam, [:string], :string
-    attach_function :_umask, :umask, [:int], :int
 
     private_class_method :mkstemp, :strerror, :tmpfile
   end
 
-  private_class_method :fclose, :_fileno, :tmpnam, :_umask
+  private_class_method :fclose, :_fileno, :tmpnam
 
   public
 
@@ -112,6 +110,8 @@ class File::Temp < File
       fd = _fileno(@fptr)
     else
       begin
+        omask = File.umask(077)
+
         if File::ALT_SEPARATOR
           template = _mktemp(template)
 
@@ -120,8 +120,6 @@ class File::Temp < File
           end
         end
 
-        omask = _umask(077)
-
         @path = File.join(TMPDIR, template)
         fd = mkstemp(@path)
 
@@ -129,7 +127,7 @@ class File::Temp < File
           raise SystemCallError, 'mkstemp function failed: ' + get_error
         end
       ensure
-        _umask(omask)
+        File.umask(omask)
       end
     end
 
@@ -167,7 +165,7 @@ class File::Temp < File
 
       FormatMessageA(flags, 0, errno, 0, buffer, buffer.size, nil)
 
-      buf.read_string
+      buffer.read_string
     else
       strerror(FFI.errno)
     end
