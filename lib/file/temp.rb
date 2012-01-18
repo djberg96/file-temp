@@ -15,7 +15,7 @@ class File::Temp < File
     attach_function :fclose, [:pointer], :int
     attach_function :_fdopen, [:int, :string], :pointer
     attach_function :_fileno, [:pointer], :int
-    attach_function :_mktemp, [:string], :string
+    attach_function :_mktemp, [:pointer], :string
     attach_function :_open, [:string, :int, :int], :int
     attach_function :_open_osfhandle, [:long, :int], :int
     attach_function :tmpnam, [:string], :string
@@ -113,7 +113,8 @@ class File::Temp < File
         omask = File.umask(077)
 
         if File::ALT_SEPARATOR
-          template = _mktemp(template)
+          char_ptr = FFI::MemoryPointer.from_string(template.dup)
+          template = _mktemp(char_ptr)
 
           if template.nil?
             raise SystemCallError, '_mktemp function failed: ' + get_error
