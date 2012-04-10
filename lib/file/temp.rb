@@ -14,7 +14,7 @@ class File::Temp < File
     attach_function :fclose, [:pointer], :int
     attach_function :_fdopen, [:int, :string], :pointer
     attach_function :_fileno, [:pointer], :int
-    attach_function :_mktemp, [:pointer], :string
+    attach_function :_mktemp_s, [:pointer, :size_t], :int
     attach_function :_open, [:string, :int, :int], :int
     attach_function :_open_osfhandle, [:long, :int], :int
     attach_function :tmpnam, [:string], :string
@@ -29,7 +29,7 @@ class File::Temp < File
     attach_function :GetTempPathA, [:long, :pointer], :long
     attach_function :GetTempFileNameA, [:string, :string, :uint, :pointer], :uint
 
-    private_class_method :_close, :_fdopen, :_mktemp, :_open, :_open_osfhandle
+    private_class_method :_close, :_fdopen, :_mktemp_s, :_open, :_open_osfhandle
     private_class_method :CloseHandle, :CreateFileA, :DeleteFileA, :FormatMessageA
     private_class_method :GetLastError, :GetTempPathA, :GetTempFileNameA
 
@@ -110,12 +110,13 @@ class File::Temp < File
         omask = File.umask(077)
 
         if File::ALT_SEPARATOR
-          char_ptr = FFI::MemoryPointer.from_string(template.dup)
-          template = _mktemp(char_ptr)
+          ptr = FFI::MemoryPointer.from_string(template.dup)
 
-          if template.nil?
-            raise SystemCallError, '_mktemp function failed: ' + get_error
+          if _mktemp_s(ptr, ptr.size) != 0
+            raise SystemCallError, '_mktemp_s function failed: ' + get_error
           end
+
+          template = ptr.read_string
         end
 
         @path = File.join(TMPDIR, template)
@@ -171,7 +172,8 @@ class File::Temp < File
 
   if File::ALT_SEPARATOR
 
-    # Simpl wrapper around the GetTempPath function.
+    # Simple wrapper around the GetTempPath function.
+    #
     def get_temp_path
       buf = FFI::MemoryPointer.new(:char, 1024)
 
