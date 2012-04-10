@@ -3,14 +3,13 @@ require 'tmpdir'
 
 class File::Temp < File
   extend FFI::Library
+  ffi_lib FFI::Library::LIBC
 
   # :stopdoc:
 
   private
 
   if File::ALT_SEPARATOR
-    ffi_lib 'msvcrt'
-
     attach_function :_close, [:int], :int
     attach_function :fclose, [:pointer], :int
     attach_function :_fdopen, [:int, :string], :pointer
@@ -20,7 +19,7 @@ class File::Temp < File
     attach_function :_open_osfhandle, [:long, :int], :int
     attach_function :tmpnam, [:string], :string
 
-    ffi_lib 'kernel32'
+    ffi_lib :kernel32
 
     attach_function :CloseHandle, [:long], :bool
     attach_function :CreateFileA, [:string, :ulong, :ulong, :pointer, :ulong, :ulong, :ulong], :long
@@ -49,8 +48,6 @@ class File::Temp < File
     FILE_FLAG_DELETE_ON_CLOSE = 0x04000000
     INVALID_HANDLE_VALUE      = -1
   else
-    ffi_lib FFI::Library::LIBC
-
     attach_function :fclose, [:pointer], :int
     attach_function :_fileno, :fileno, [:pointer], :int
     attach_function :mkstemp, [:string], :int
@@ -173,6 +170,8 @@ class File::Temp < File
   end
 
   if File::ALT_SEPARATOR
+
+    # Simpl wrapper around the GetTempPath function.
     def get_temp_path
       buf = FFI::MemoryPointer.new(:char, 1024)
 
@@ -227,6 +226,7 @@ class File::Temp < File
 
       if fp.nil?
         _close(fd)
+        CloseHandle(handle)
         raise SystemCallError, 'fdopen function failed: ' + get_error
       end
 
