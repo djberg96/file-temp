@@ -76,18 +76,18 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   def test_file_temp_path_basic_functionality
-    temp = File::Temp.new
-    assert_respond_to(temp, :path)
+    @fh = File::Temp.new
+    assert_respond_to(@fh, :path)
   end
 
   def test_file_temp_path_is_nil_if_delete_option_is_true
-    temp = File::Temp.new
-    assert_nil(temp.path)
+    @fh = File::Temp.new
+    assert_nil(@fh.path)
   end
 
   def test_file_temp_path_is_not_nil_if_delete_option_is_false
-    temp = File::Temp.new(false)
-    assert_not_nil(temp.path)
+    @fh = File::Temp.new(false)
+    assert_not_nil(@fh.path)
   end
 
   def test_ffi_functions_are_private
