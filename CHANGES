@@ -1,4 +1,4 @@
-= 1.2.0 - ???
+= 1.2.0 - 10-Apr-2012
 * Removed the old FileTemp alias for File::Temp. It was deprecated and
   has now been officially removed.
 * Some refactoring of the custom internal Windows functions.
