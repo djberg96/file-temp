@@ -92,17 +92,17 @@ class TC_File_Temp < Test::Unit::TestCase
 
   def test_ffi_functions_are_private
     methods = File::Temp.methods(false).map{ |e| e.to_s }
-    assert_false(File::Temp.methods.include?('_fileno'))
-    assert_false(File::Temp.methods.include?('mkstemp'))
-    assert_false(File::Temp.methods.include?('_umask'))
-    assert_false(File::Temp.methods.include?('fclose'))
-    assert_false(File::Temp.methods.include?('strerror'))
-    assert_false(File::Temp.methods.include?('tmpnam'))
-    assert_false(File::Temp.methods.include?('CloseHandle'))
-    assert_false(File::Temp.methods.include?('CreateFileA'))
-    assert_false(File::Temp.methods.include?('DeleteFileA'))
-    assert_false(File::Temp.methods.include?('GetTempPathA'))
-    assert_false(File::Temp.methods.include?('GetTempFileNameA'))
+    assert_false(methods.include?('_fileno'))
+    assert_false(methods.include?('mkstemp'))
+    assert_false(methods.include?('_umask'))
+    assert_false(methods.include?('fclose'))
+    assert_false(methods.include?('strerror'))
+    assert_false(methods.include?('tmpnam'))
+    assert_false(methods.include?('CloseHandle'))
+    assert_false(methods.include?('CreateFileA'))
+    assert_false(methods.include?('DeleteFileA'))
+    assert_false(methods.include?('GetTempPathA'))
+    assert_false(methods.include?('GetTempFileNameA'))
   end
 
   def teardown
