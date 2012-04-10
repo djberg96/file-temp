@@ -5,9 +5,7 @@
 # via the 'rake test' task.
 ######################################################################
 require 'rubygems'
-gem 'test-unit'
-
-require 'test/unit'
+require 'test-unit'
 require 'file/temp'
 
 class TC_File_Temp < Test::Unit::TestCase
