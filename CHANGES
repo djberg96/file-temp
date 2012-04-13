@@ -1,3 +1,11 @@
+= 1.2.1 - ???
+* Reworked the error handling. The posix functions now use a combination
+  of SystemCallError and FFI.errno, except on Windows, which uses _get_errno
+  instead for the posix compatible functions.
+* Use _mktemp instead of _mktemp_s on Windows if the latter is not supported.
+* Refactored the tests to use declarative syntax and added one test for
+  invalid templates.
+
 = 1.2.0 - 10-Apr-2012
 * Removed the old FileTemp alias for File::Temp. It was deprecated and
   has now been officially removed.
