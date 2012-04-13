@@ -14,24 +14,30 @@ class File::Temp < File
     attach_function :fclose, [:pointer], :int
     attach_function :_fdopen, [:int, :string], :pointer
     attach_function :_fileno, [:pointer], :int
-    attach_function :_mktemp_s, [:pointer, :size_t], :int
+    attach_function :_get_errno, [:pointer], :int
     attach_function :_open, [:string, :int, :int], :int
     attach_function :_open_osfhandle, [:long, :int], :int
     attach_function :tmpnam, [:string], :string
+
+    begin
+      attach_function :_mktemp_s, [:pointer, :size_t], :int
+      private_class_method :_mktemp_s
+    rescue FFI::NotFoundError
+      attach_function :_mktemp, [:pointer], :string
+      private_class_method :_mktemp
+    end
 
     ffi_lib :kernel32
 
     attach_function :CloseHandle, [:long], :bool
     attach_function :CreateFileA, [:string, :ulong, :ulong, :pointer, :ulong, :ulong, :ulong], :long
     attach_function :DeleteFileA, [:string], :bool
-    attach_function :FormatMessageA, [:long, :long, :long, :long, :pointer, :long, :pointer], :long
-    attach_function :GetLastError, [], :int
     attach_function :GetTempPathA, [:long, :pointer], :long
     attach_function :GetTempFileNameA, [:string, :string, :uint, :pointer], :uint
 
-    private_class_method :_close, :_fdopen, :_mktemp_s, :_open, :_open_osfhandle
-    private_class_method :CloseHandle, :CreateFileA, :DeleteFileA, :FormatMessageA
-    private_class_method :GetLastError, :GetTempPathA, :GetTempFileNameA
+    private_class_method :_close, :_fdopen, :_open, :_open_osfhandle
+    private_class_method :CloseHandle, :CreateFileA, :DeleteFileA
+    private_class_method :GetTempPathA, :GetTempFileNameA
 
     S_IWRITE      = 128
     S_IREAD       = 256
@@ -65,7 +71,7 @@ class File::Temp < File
   # :startdoc:
 
   # The version of the file-temp library.
-  VERSION = '1.2.0'
+  VERSION = '1.2.1'
 
   # The temporary directory used on MS Windows or Unix.
   if File::ALT_SEPARATOR
@@ -110,20 +116,30 @@ class File::Temp < File
         omask = File.umask(077)
 
         if File::ALT_SEPARATOR
-          ptr = FFI::MemoryPointer.from_string(template.dup)
+          if respond_to?(:_mktemp_s)
+            ptr = FFI::MemoryPointer.from_string(template.dup)
 
-          if _mktemp_s(ptr, ptr.size) != 0
-            raise SystemCallError, '_mktemp_s function failed: ' + get_error
+            if _mktemp_s(ptr, ptr.size) != 0
+              raise SystemCallError, get_posix_errno, "mktemp_s('#{template}')"
+            end
+
+            new_template = ptr.read_string
+          else
+            new_template = _mktemp(template.dup);
+
+            if new_template.nil?
+              raise SystemCallError, get_posix_errno, "mktemp('#{template}')"
+            end
+
+            new_template
           end
-
-          template = ptr.read_string
         end
 
-        @path = File.join(TMPDIR, template)
+        @path = File.join(TMPDIR, new_template)
         fd = mkstemp(@path)
 
         if fd < 0
-          raise SystemCallError, 'mkstemp function failed: ' + get_error
+          raise SystemCallError, get_posix_errno, 'mkstemp'
         end
       ensure
         File.umask(omask)
@@ -156,29 +172,28 @@ class File::Temp < File
 
   private
 
-  def get_error
+  # For those times when we want the posix errno rather than a formatted string.
+  # This is necessary because FFI.errno appears to be using GetLastError() which
+  # does not always match what _get_errno() returns.
+  #
+  def get_posix_errno
     if File::ALT_SEPARATOR
-      errno  = GetLastError()
-      buffer = FFI::MemoryPointer.new(:char, 512)
-      flags  = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY
-
-      FormatMessageA(flags, 0, errno, 0, buffer, buffer.size, nil)
-
-      buffer.read_string
+      ptr = FFI::MemoryPointer.new(:int)
+      _get_errno(ptr)
+      ptr.read_int
     else
-      strerror(FFI.errno)
+      FFI.errno
     end
   end
 
   if File::ALT_SEPARATOR
-
     # Simple wrapper around the GetTempPath function.
     #
     def get_temp_path
       buf = FFI::MemoryPointer.new(:char, 1024)
 
       if GetTempPathA(buf.size, buf) == 0
-        raise SystemCallError, 'GetTempPathA function failed: ' + get_error
+        raise SystemCallError, FFI.errno, 'GetTempPathA'
       end
 
       buf.read_string.chop # remove trailing slash
@@ -197,7 +212,7 @@ class File::Temp < File
       buf = FFI::MemoryPointer.new(:char, 1024)
 
       if GetTempFileNameA(file_name, 'rb_', 0, buf) == 0
-        raise SystemCallError, 'GetTempFileNameA function failed: ' + get_error
+        raise SystemCallError, FFI.errno, 'GetTempFileNameA'
       end
 
       file_name = buf.read_string
@@ -214,14 +229,14 @@ class File::Temp < File
 
       if handle == INVALID_HANDLE_VALUE
         DeleteFileA(file_name)
-        raise SystemCallError, 'CreateFileA function failed: ' + get_error
+        raise SystemCallError, FFI.errno, 'CreateFileA'
       end
 
       fd = _open_osfhandle(handle, 0)
 
       if fd < 0
         CloseHandle(handle)
-        raise SystemCallError, '_open_osfhandle function failed: ' + get_error
+        raise SystemCallError, get_posix_errno, '_open_osfhandle'
       end
 
       fp = _fdopen(fd, 'w+b')
@@ -229,7 +244,7 @@ class File::Temp < File
       if fp.nil?
         _close(fd)
         CloseHandle(handle)
-        raise SystemCallError, 'fdopen function failed: ' + get_error
+        raise SystemCallError, get_posix_errno, 'fdopen'
       end
 
       fp
@@ -245,7 +260,7 @@ class File::Temp < File
       fd = _open(template, flags, pmode)
 
       if fd < 0
-        raise SystemCallError, '_open function failed: ' + get_error
+        raise SystemCallError, get_posix_errno, '_open'
       end
 
       fd

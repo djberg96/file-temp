@@ -20,75 +20,85 @@ class TC_File_Temp < Test::Unit::TestCase
     @dir = @dir.tr("\\", "/") if WINDOWS
   end
 
-  def test_file_temp_version
-    assert_equal('1.2.0', File::Temp::VERSION)
+  test "library version is set to expected value" do
+    assert_equal('1.2.1', File::Temp::VERSION)
   end
 
-  def test_file_temp_threaded
+  test "library works as expected with multiple threads" do
     threads = []
     assert_nothing_raised{ 100.times{ threads << Thread.new{ File::Temp.new }}}
     assert_nothing_raised{ threads.join }
   end
 
-  def test_file_temp_tmpdir
+  test "TMPDIR constant is defined" do
     assert_not_nil(File::Temp::TMPDIR)
     assert_kind_of(String, File::Temp::TMPDIR)
   end
 
-  def test_file_temp_auto_delete
-    assert_nothing_raised{ @fh = File::Temp.new }
-    assert_nothing_raised{ @fh.print "hello" }
-    assert_nothing_raised{ @fh.close }
+  test "constructor works as expected with default auto delete option" do
+    assert_nothing_raised{
+      @fh = File::Temp.new
+      @fh.print "hello"
+      @fh.close
+    }
   end
 
-  def test_file_temp_no_delete
-    assert_nothing_raised{ @fh = File::Temp.new(false) }
-    assert_nothing_raised{ @fh.print "hello" }
-    assert_nothing_raised{ @fh.close }
-    assert_true(Dir["#{@dir}/rb_file_temp*"].length == 1)
+  test "constructor works as expected with false auto delete option" do
+    assert_nothing_raised{
+      @fh = File::Temp.new(false)
+      @fh.print "hello"
+      @fh.close
+    }
   end
 
-  def test_file_temp_no_delete_with_template
+  test "constructor accepts and uses an optional template as expected" do
     assert_nothing_raised{ File::Temp.new(false, 'temp_foo_XXXXXX').close }
     assert_true(Dir["#{@dir}/temp_foo*"].length >= 1)
   end
 
-  def test_file_temp_no_delete_with_block
+  test "constructor with false auto delete and block works as expected" do
     assert_nothing_raised{ File::Temp.open(false, 'temp_foo_XXXXXX'){ |fh| fh.puts "hello" } }
     assert_true(Dir["#{@dir}/temp_foo*"].length >= 1)
   end
 
-  def test_file_temp_expected_errors
+  test "second argument to constructor must be a string" do
     assert_raise(TypeError, ArgumentError){ @fh = File::Temp.new(false, 1) }
+  end
+
+  test "an error is raised if a custom template is invalid" do
+    assert_raise(Errno::EINVAL){ File::Temp.new(false, 'xx') }
+  end
+
+  test "constructor accepts a maximum of two arguments" do
     assert_raise(ArgumentError){ @fh = File::Temp.new(true, 'temp_bar_XXXXX', 1) }
   end
 
-  def test_file_temp_name_basic_functionality
+  test "temp_name basic functionality" do
     assert_respond_to(File::Temp, :temp_name)
     assert_nothing_raised{ File::Temp.temp_name }
     assert_kind_of(String, File::Temp.temp_name)
   end
 
-  def test_file_temp_name
+  test "temp_name returns expected value" do
     assert_equal('.tmp', File.extname(File::Temp.temp_name))
   end
 
-  def test_file_temp_path_basic_functionality
+  test "temp path basic functionality" do
     @fh = File::Temp.new
     assert_respond_to(@fh, :path)
   end
 
-  def test_file_temp_path_is_nil_if_delete_option_is_true
+  test "temp path is nil if delete option is true" do
     @fh = File::Temp.new
     assert_nil(@fh.path)
   end
 
-  def test_file_temp_path_is_not_nil_if_delete_option_is_false
+  test "temp path is not nil if delete option is false" do
     @fh = File::Temp.new(false)
     assert_not_nil(@fh.path)
   end
 
-  def test_ffi_functions_are_private
+  test "ffi functions are private" do
     methods = File::Temp.methods(false).map{ |e| e.to_s }
     assert_false(methods.include?('_fileno'))
     assert_false(methods.include?('mkstemp'))
