@@ -3,6 +3,7 @@
   of SystemCallError and FFI.errno, except on Windows, which uses _get_errno
   instead for the posix compatible functions.
 * Use _mktemp instead of _mktemp_s on Windows if the latter is not supported.
+* Use wide character functions on Windows.
 * Refactored the tests to use declarative syntax and added one test for
   invalid templates.
 
