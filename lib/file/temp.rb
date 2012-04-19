@@ -30,14 +30,14 @@ class File::Temp < File
     ffi_lib :kernel32
 
     attach_function :CloseHandle, [:long], :bool
-    attach_function :CreateFileA, [:string, :ulong, :ulong, :pointer, :ulong, :ulong, :ulong], :long
-    attach_function :DeleteFileA, [:string], :bool
-    attach_function :GetTempPathA, [:long, :pointer], :long
-    attach_function :GetTempFileNameA, [:string, :string, :uint, :pointer], :uint
+    attach_function :CreateFileW, [:buffer_in, :ulong, :ulong, :pointer, :ulong, :ulong, :ulong], :long
+    attach_function :DeleteFileW, [:string], :bool
+    attach_function :GetTempPathW, [:ulong, :buffer_out], :ulong
+    attach_function :GetTempFileNameW, [:buffer_in, :string, :uint, :buffer_out], :uint
 
     private_class_method :_close, :_fdopen, :_open, :_open_osfhandle
-    private_class_method :CloseHandle, :CreateFileA, :DeleteFileA
-    private_class_method :GetTempPathA, :GetTempFileNameA
+    private_class_method :CloseHandle, :CreateFileW, :DeleteFileW
+    private_class_method :GetTempPathW, :GetTempFileNameW
 
     S_IWRITE      = 128
     S_IREAD       = 256
@@ -190,13 +190,14 @@ class File::Temp < File
     # Simple wrapper around the GetTempPath function.
     #
     def get_temp_path
-      buf = FFI::MemoryPointer.new(:char, 1024)
+      buf = 0.chr * 1024
+      buf.encode!("UTF-16LE")
 
-      if GetTempPathA(buf.size, buf) == 0
-        raise SystemCallError, FFI.errno, 'GetTempPathA'
+      if GetTempPathW(buf.size, buf) == 0
+        raise SystemCallError, FFI.errno, 'GetTempPathW'
       end
 
-      buf.read_string.chop # remove trailing slash
+      buf.strip.chop # remove trailing slash
     end
 
     # The version of tmpfile() implemented by Microsoft is unacceptable.
@@ -209,15 +210,16 @@ class File::Temp < File
     #
     def tmpfile
       file_name = get_temp_path()
-      buf = FFI::MemoryPointer.new(:char, 1024)
+      buf = 0.chr * 1024
+      buf.encode!("UTF-16LE")
 
-      if GetTempFileNameA(file_name, 'rb_', 0, buf) == 0
-        raise SystemCallError, FFI.errno, 'GetTempFileNameA'
+      if GetTempFileNameW(file_name, 'rb_', 0, buf) == 0
+        raise SystemCallError, FFI.errno, 'GetTempFileNameW'
       end
 
-      file_name = buf.read_string
+      file_name = buf.strip
 
-      handle = CreateFileA(
+      handle = CreateFileW(
         file_name,
         GENERIC_READ | GENERIC_WRITE,
         0,
@@ -228,8 +230,8 @@ class File::Temp < File
       )
 
       if handle == INVALID_HANDLE_VALUE
-        DeleteFileA(file_name)
-        raise SystemCallError, FFI.errno, 'CreateFileA'
+        DeleteFileW(file_name)
+        raise SystemCallError, FFI.errno, 'CreateFileW'
       end
 
       fd = _open_osfhandle(handle, 0)
