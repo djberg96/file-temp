@@ -230,8 +230,9 @@ class File::Temp < File
       )
 
       if handle == INVALID_HANDLE_VALUE
+        error = FFI.errno
         DeleteFileW(file_name)
-        raise SystemCallError, FFI.errno, 'CreateFileW'
+        raise SystemCallError, error, 'CreateFileW'
       end
 
       fd = _open_osfhandle(handle, 0)
