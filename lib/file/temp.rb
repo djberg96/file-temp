@@ -164,7 +164,7 @@ class File::Temp < File
   #
   def self.temp_name
     if File::ALT_SEPARATOR
-      TMPDIR + tmpnam(nil) << '.tmp'
+      TMPDIR + tmpnam(nil) << 'tmp'
     else
       tmpnam(nil) << '.tmp'
     end
