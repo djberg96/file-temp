@@ -125,14 +125,14 @@ class File::Temp < File
 
             new_template = ptr.read_string
           else
-            new_template = _mktemp(template.dup);
+            new_template = _mktemp(template.dup)
 
             if new_template.nil?
               raise SystemCallError, get_posix_errno, "mktemp('#{template}')"
             end
-
-            new_template
           end
+        else
+          new_template = template
         end
 
         @path = File.join(TMPDIR, new_template)
