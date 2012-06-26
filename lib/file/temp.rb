@@ -11,6 +11,8 @@ class File::Temp < File
   def initialize(delete = true, template = 'rb_file_temp_XXXXXX')
     raise TypeError unless template.is_a?(String)
 
+    # Since Java uses a GUID extension to generate a unique file name
+    # we'll simply chop off the 'X' characters and let Java do the rest.
     template = template.sub(/_X{1,6}/, '_')
 
     @file = java.io.File.createTempFile(template, nil)
