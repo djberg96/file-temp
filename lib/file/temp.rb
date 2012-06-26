@@ -38,7 +38,14 @@ class File::Temp < File
     # we'll simply chop off the 'X' characters and let Java do the rest.
     template = template.sub(/_X{1,6}/, '_')
 
-    @file = java.io.File.createTempFile(template, nil)
+    # For consistency between implementations, convert errors here
+    # to Errno::EINVAL.
+    begin
+      @file = java.io.File.createTempFile(template, nil)
+    rescue NativeException => err
+      raise SystemCallError.new(22), template # 22 is EINVAL
+    end
+
     @file.deleteOnExit if delete
 
     @path = @file.getName unless delete
