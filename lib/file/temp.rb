@@ -46,12 +46,19 @@ class File::Temp < File
     super(@file.getName, 'wb+')
   end
 
+  # Generates a unique file name.
+  #
   def self.temp_name
     file = java.io.File.createTempFile('rb_file_temp_', nil)
     file.deleteOnExit
-    file.getName
+    name = file.getName
+    file.finalize
+    name
   end
 
+  # Identical to the File#close method except that we also finalize
+  # the underlying Java File object.
+  #
   def close
     super
     @file.finalize
