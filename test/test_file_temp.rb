@@ -99,6 +99,7 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   test "ffi functions are private" do
+    omit_if(RUBY_PLATFORM == 'java')
     methods = File::Temp.methods(false).map{ |e| e.to_s }
     assert_false(methods.include?('_fileno'))
     assert_false(methods.include?('mkstemp'))
