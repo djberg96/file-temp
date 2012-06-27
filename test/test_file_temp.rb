@@ -21,12 +21,12 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   test "library version is set to expected value" do
-    assert_equal('1.2.1', File::Temp::VERSION)
+    assert_equal('1.2.2', File::Temp::VERSION)
   end
 
   test "library works as expected with multiple threads" do
     threads = []
-    assert_nothing_raised{ 100.times{ threads << Thread.new{ File::Temp.new }}}
+    assert_nothing_raised{ 100.times{ threads << Thread.new{ fh = File::Temp.new; fh.close }}}
     assert_nothing_raised{ threads.join }
   end
 
