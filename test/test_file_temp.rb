@@ -27,7 +27,7 @@ class TC_File_Temp < Test::Unit::TestCase
   test "library works as expected with multiple threads" do
     threads = []
     assert_nothing_raised{ 100.times{ threads << Thread.new{ File::Temp.new }}}
-    assert_nothing_raised{ threads.join }
+    assert_nothing_raised{ threads.each{ |t| t.join } }
   end
 
   test "TMPDIR constant is defined" do
