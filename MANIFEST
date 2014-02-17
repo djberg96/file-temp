@@ -4,4 +4,6 @@
 * Rakefile
 * file-temp.gemspec
 * lib/file/temp.rb
+* lib/file/temp_c.rb
+* lib/file/temp_java.rb
 * test/test_file_temp.rb
