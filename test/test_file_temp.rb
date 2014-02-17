@@ -80,7 +80,11 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   test "temp_name returns expected value" do
-    assert_equal('.tmp', File.extname(File::Temp.temp_name))
+    if File::ALT_SEPARATOR
+      assert_match(/^.*?\d*?tmp/, File.extname(File::Temp.temp_name))
+    else
+      assert_equal('.tmp', File.extname(File::Temp.temp_name))
+    end
   end
 
   test "temp path basic functionality" do
@@ -88,9 +92,9 @@ class TC_File_Temp < Test::Unit::TestCase
     assert_respond_to(@fh, :path)
   end
 
-  test "temp path is nil if delete option is true" do
+  test "temp path is not nil if delete option is true" do
     @fh = File::Temp.new
-    assert_nil(@fh.path)
+    assert_kind_of(String, @fh.path)
   end
 
   test "temp path is not nil if delete option is false" do
