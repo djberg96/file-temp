@@ -17,15 +17,11 @@ class File::Temp < File
     attach_function :_get_errno, [:pointer], :int
     attach_function :_open, [:string, :int, :int], :int
     attach_function :_open_osfhandle, [:long, :int], :int
-    attach_function :tmpnam, [:string], :string
+    attach_function :tmpnam_s, [:pointer, :size_t], :int
+    attach_function :mktemp_s, :_mktemp_s, [:pointer, :size_t], :int
 
-    begin
-      attach_function :_mktemp_s, [:pointer, :size_t], :int
-      private_class_method :_mktemp_s
-    rescue FFI::NotFoundError
-      attach_function :_mktemp, [:pointer], :string
-      private_class_method :_mktemp
-    end
+    private_class_method :_close, :_fdopen, :_get_errno, :_open
+    private_class_method :_open_osfhandle, :mktemp_s, :tmpnam_s
 
     ffi_lib :kernel32
 
@@ -56,15 +52,15 @@ class File::Temp < File
   else
     attach_function :fclose, [:pointer], :int
     attach_function :_fileno, :fileno, [:pointer], :int
-    attach_function :mkstemp, [:string], :int
     attach_function :strerror, [:int], :string
     attach_function :tmpfile, [], :pointer
     attach_function :tmpnam, [:string], :string
+    attach_function :mktemp, [:pointer], :string
 
-    private_class_method :mkstemp, :strerror, :tmpfile
+    private_class_method :mktemp, :strerror, :tmpfile, :tmpnam
   end
 
-  private_class_method :fclose, :_fileno, :tmpnam
+  private_class_method :fclose, :_fileno
 
   public
 
@@ -80,8 +76,7 @@ class File::Temp < File
     TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || Dir.tmpdir
   end
 
-  # The name of the file. This is only retained if the first argument to the
-  # constructor is false.
+  # The name of the temporary file.
   attr_reader :path
 
   # Creates a new, anonymous, temporary file in your File::Temp::TMPDIR
@@ -107,46 +102,34 @@ class File::Temp < File
   #
   def initialize(delete = true, template = 'rb_file_temp_XXXXXX')
     @fptr = nil
+    @path = template
 
     if delete
-      @fptr = tmpfile()
+      @fptr, @path = *tmpfile()
       fd = _fileno(@fptr)
     else
       begin
         omask = File.umask(077)
 
-        if File::ALT_SEPARATOR
-          if respond_to?(:_mktemp_s)
-            ptr = FFI::MemoryPointer.from_string(template.dup)
+        ptr = FFI::MemoryPointer.from_string(template)
 
-            if _mktemp_s(ptr, ptr.size) != 0
-              raise SystemCallError, get_posix_errno, "mktemp_s('#{template}')"
-            end
+        errno = mktemp_s(ptr, ptr.size)
 
-            new_template = ptr.read_string
-          else
-            new_template = _mktemp(template.dup)
-
-            if new_template.nil?
-              raise SystemCallError, get_posix_errno, "mktemp('#{template}')"
-            end
-          end
-        else
-          new_template = template
+        if errno != 0
+          raise SystemCallError.new('mktemp_s', errno)
         end
 
-        @path = File.join(TMPDIR, new_template)
-        fd = mkstemp(@path)
-
-        if fd < 0
-          raise SystemCallError, get_posix_errno, 'mkstemp'
-        end
+        @path = File.join(TMPDIR, ptr.read_string).tr(File::SEPARATOR, File::ALT_SEPARATOR)
       ensure
         File.umask(omask)
       end
     end
 
-    super(fd, 'wb+')
+    if delete
+      super(fd, 'wb+')
+    else
+      super(@path, 'wb+')
+    end
   end
 
   # The close method was overridden to ensure the internal file pointer we
@@ -161,10 +144,18 @@ class File::Temp < File
   # Generates a unique file name.
   #
   # Note that a file is not actually generated on the filesystem.
+  #--
+  # NOTE: One quirk of the Windows function is that, after the first call, it
+  # adds a file extension of sequential numbers in base 32, e.g. .1-.1vvvvvu.
   #
   def self.temp_name
     if File::ALT_SEPARATOR
-      TMPDIR + tmpnam(nil) << 'tmp'
+      ptr = FFI::MemoryPointer.new(:char, 1024)
+      errno = tmpnam_s(ptr, ptr.size)
+
+      raise SystemCallError.new('tmpnam_s', errno) if errno != 0
+
+      TMPDIR + ptr.read_string + 'tmp'
     else
       tmpnam(nil) << '.tmp'
     end
@@ -232,7 +223,7 @@ class File::Temp < File
       if handle == INVALID_HANDLE_VALUE
         error = FFI.errno
         DeleteFileW(file_name)
-        raise SystemCallError, error, 'CreateFileW'
+        raise SystemCallError.new('CreateFileW', error)
       end
 
       fd = _open_osfhandle(handle, 0)
@@ -250,23 +241,7 @@ class File::Temp < File
         raise SystemCallError, get_posix_errno, 'fdopen'
       end
 
-      fp
-    end
-
-    # The MS C runtime does not define a mkstemp() function, so we've
-    # created one here.
-    #
-    def mkstemp(template)
-      flags = RDWR | BINARY | CREAT | EXCL | SHORT_LIVED
-      pmode = S_IREAD | S_IWRITE
-
-      fd = _open(template, flags, pmode)
-
-      if fd < 0
-        raise SystemCallError, get_posix_errno, '_open'
-      end
-
-      fd
+      [fp, file_name]
     end
   end
 end
