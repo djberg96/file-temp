@@ -16,7 +16,8 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 1.8.6'
 
   spec.add_dependency('ffi', '>= 1.0.0')
-  spec.add_development_dependency('test-unit', '>= 2.4.0')
+  spec.add_development_dependency('test-unit')
+  spec.add_development_dependency('rake')
 
   spec.description = <<-EOF
     The file-temp library provides an alternative approach to generating
