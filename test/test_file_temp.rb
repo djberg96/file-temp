@@ -24,6 +24,7 @@ class TC_File_Temp < Test::Unit::TestCase
     assert_equal('1.2.1', File::Temp::VERSION)
   end
 
+  # Fails with JRuby, not sure why.
   test "library works as expected with multiple threads" do
     threads = []
     assert_nothing_raised{ 100.times{ threads << Thread.new{ File::Temp.new }}}
