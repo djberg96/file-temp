@@ -76,7 +76,8 @@ class File::Temp < File
     TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || Dir.tmpdir
   end
 
-  # The name of the temporary file.
+  # The name of the temporary file. Set to nil if the +delete+ option to the
+  # constructor is true.
   attr_reader :path
 
   # Creates a new, anonymous, temporary file in your File::Temp::TMPDIR
@@ -105,7 +106,7 @@ class File::Temp < File
     @path = template
 
     if delete
-      @fptr, @path = *tmpfile()
+      @fptr = *tmpfile()
       fd = _fileno(@fptr)
     else
       begin
@@ -113,13 +114,18 @@ class File::Temp < File
 
         ptr = FFI::MemoryPointer.from_string(template)
 
-        errno = mktemp_s(ptr, ptr.size)
+        if File::ALT_SEPARATOR
+          errno = mktemp_s(ptr, ptr.size)
 
-        if errno != 0
-          raise SystemCallError.new('mktemp_s', errno)
+          raise SystemCallError.new('mktemp_s', errno) if errno != 0
+        else
+          str = mktemp(ptr)
+
+          raise SystemCallError.new('mktemp', errno) if str.nil?
         end
 
-        @path = File.join(TMPDIR, ptr.read_string).tr(File::SEPARATOR, File::ALT_SEPARATOR)
+        @path = File.join(TMPDIR, ptr.read_string)
+        @path.tr!(File::SEPARATOR, File::ALT_SEPARATOR) if File::ALT_SEPARATOR
       ensure
         File.umask(omask)
       end
@@ -241,7 +247,13 @@ class File::Temp < File
         raise SystemCallError, get_posix_errno, 'fdopen'
       end
 
-      [fp, file_name]
+      fp
     end
   end
+end
+
+if $0 == __FILE__
+  fh = File::Temp.new(false)
+  p fh.path
+  fh.close
 end
