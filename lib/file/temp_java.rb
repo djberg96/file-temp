@@ -53,7 +53,7 @@ class File::Temp < File
 
     @path = @file.getName
 
-    super(@file.getName, 'wb+')
+    super(@path, 'wb+')
   end
 
   # Generates a unique file name.
