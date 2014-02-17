@@ -2,10 +2,13 @@ require 'java'
 import java.lang.System
 
 class File::Temp < File
+  # The version of the file-temp library.
   VERSION = '1.2.1'
 
+  # The temporary directory used on MS Windows or Unix.
   TMPDIR = java.lang.System.getProperties["java.io.tmpdir"]
 
+  # The name of the temporary file.
   attr_reader :path
 
   # Creates a new, anonymous, temporary file in your File::Temp::TMPDIR
@@ -48,7 +51,7 @@ class File::Temp < File
 
     @file.deleteOnExit if delete
 
-    @path = @file.getName unless delete
+    @path = @file.getName
 
     super(@file.getName, 'wb+')
   end
