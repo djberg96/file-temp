@@ -1,4 +1,4 @@
-= 1.2.1 - ???
+= 1.2.1 - 17-Feb-2014
 * There is now a completely separate implementation for JRuby that uses the
   Java API instead of C. It uses a GUID to create the temporary file name
   instead of the 'XXXXXX' template, but is otherwise identical in function.
