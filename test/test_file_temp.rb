@@ -93,9 +93,9 @@ class TC_File_Temp < Test::Unit::TestCase
     assert_respond_to(@fh, :path)
   end
 
-  test "temp path is not nil if delete option is true" do
+  test "temp path is nil if delete option is true" do
     @fh = File::Temp.new
-    assert_kind_of(String, @fh.path)
+    assert_nil(@fh.path)
   end
 
   test "temp path is not nil if delete option is false" do
