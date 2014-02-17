@@ -54,7 +54,7 @@ class File::Temp < File
     attach_function :_fileno, :fileno, [:pointer], :int
     attach_function :strerror, [:int], :string
     attach_function :tmpfile, [], :pointer
-    attach_function :tmpnam, [:string], :string
+    attach_function :tmpnam, [:pointer], :string
     attach_function :mktemp, [:pointer], :string
 
     private_class_method :mktemp, :strerror, :tmpfile, :tmpnam
@@ -103,10 +103,9 @@ class File::Temp < File
   #
   def initialize(delete = true, template = 'rb_file_temp_XXXXXX')
     @fptr = nil
-    @path = template
 
     if delete
-      @fptr = *tmpfile()
+      @fptr = tmpfile()
       fd = _fileno(@fptr)
     else
       begin
@@ -121,7 +120,9 @@ class File::Temp < File
         else
           str = mktemp(ptr)
 
-          raise SystemCallError.new('mktemp', errno) if str.nil?
+          if str.nil? || str.empty?
+            raise SystemCallError.new('mktemp', FFI.errno)
+          end
         end
 
         @path = File.join(TMPDIR, ptr.read_string)
@@ -250,10 +251,4 @@ class File::Temp < File
       fp
     end
   end
-end
-
-if $0 == __FILE__
-  fh = File::Temp.new(false)
-  p fh.path
-  fh.close
 end
