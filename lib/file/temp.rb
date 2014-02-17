@@ -4,7 +4,7 @@ import java.lang.System
 class File::Temp < File
   VERSION = '1.2.2'
 
-  TMPDIR = System.getProperties["java.io.tmpdir"]
+  TMPDIR = java.lang.System.getProperties["java.io.tmpdir"]
 
   attr_reader :path
 
