@@ -1,3 +1,13 @@
+= 1.3.0 - ???
+* This gem is now signed.
+* Added a file-temp.rb file for convenience.
+* The gem tasks in the Rakefile now assume Rubygems 2.x.
+* Some gemspec updates, removed rubyforge_project, added a cert.
+* Skip one test on OSX since it's an issue with the underlying C function.
+* Reorganized internal directory layout so Windows, Unix and Java versions
+  are each in their own directory and have their own versions for ease
+  of maintenance.
+
 = 1.2.1 - 17-Feb-2014
 * There is now a completely separate implementation for JRuby that uses the
   Java API instead of C. It uses a GUID to create the temporary file name
