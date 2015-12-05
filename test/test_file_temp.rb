@@ -10,6 +10,7 @@ require 'file/temp'
 
 class TC_File_Temp < Test::Unit::TestCase
   WINDOWS = File::ALT_SEPARATOR
+  OSX = RbConfig::CONFIG['host_os'] =~ /darwin/i
 
   def setup
     @dir = File::Temp::TMPDIR
@@ -21,7 +22,7 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   test "library version is set to expected value" do
-    assert_equal('1.2.1', File::Temp::VERSION)
+    assert_equal('1.3.0', File::Temp::VERSION)
   end
 
   # Fails with JRuby, not sure why.
@@ -67,6 +68,7 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   test "an error is raised if a custom template is invalid" do
+    omit_if(OSX)
     assert_raise(Errno::EINVAL){ File::Temp.new(false, 'xx') }
   end
 

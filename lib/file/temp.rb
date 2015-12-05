@@ -1,5 +1,9 @@
 if RUBY_PLATFORM == 'java'
-  require File.join(File.expand_path(File.dirname(__FILE__)), 'temp_java')
+  require_relative 'java/temp'
 else
-  require File.join(File.expand_path(File.dirname(__FILE__)), 'temp_c')
+  if File::ALT_SEPARATOR
+    require_relative 'windows/temp'
+  else
+    require_relative 'unix/temp'
+  end
 end
