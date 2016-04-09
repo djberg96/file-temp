@@ -3,7 +3,7 @@ import java.lang.System
 
 class File::Temp < File
   # The version of the file-temp library.
-  VERSION = '1.2.1'
+  VERSION = '1.3.0'
 
   # The temporary directory used on MS Windows or Unix.
   TMPDIR = java.lang.System.getProperties["java.io.tmpdir"]
@@ -51,9 +51,10 @@ class File::Temp < File
 
     @file.deleteOnExit if delete
 
-    @path = @file.getName
+    path = @file.getName
+    super(path, 'wb+')
 
-    super(@path, 'wb+')
+    @path = path unless delete
   end
 
   # Generates a unique file name.
