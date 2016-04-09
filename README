@@ -42,11 +42,15 @@
 == MS Windows
    You may need to use the mingw build in order to use this library.
 
+   Also, there was a bug with GetTempFileName function on certain versions
+   of MS Windows that may cause a failure. However, if you'r patched up you
+   should not see it. 
+
 == License
    Artistic 2.0
 
 == Copyright
-   (C) 2007-2014 Daniel J. Berger
+   (C) 2007-2016 Daniel J. Berger
    All Rights Reserved
 
 == Warranty
