@@ -6,6 +6,7 @@
 * certs/djberg96_pub.pem
 * lib/file-temp.rb
 * lib/file/temp.rb
-* lib/file/temp_c.rb
-* lib/file/temp_java.rb
+* lib/file/java/temp.rb
+* lib/file/unix/temp.rb
+* lib/file/windows/temp.rb
 * test/test_file_temp.rb
