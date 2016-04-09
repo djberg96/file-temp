@@ -20,7 +20,7 @@ class File::Temp < File
   attach_function :mktemp_s, :_mktemp_s, [:pointer, :size_t], :int
 
   private_class_method :_close, :fclose, :_fdopen, :_fileno, :_get_errno
-  private_class_method :open, :_open_osfhandle, :mktemp_s, :tmpnam_s
+  private_class_method :_open, :_open_osfhandle, :mktemp_s, :tmpnam_s
 
   ffi_lib :kernel32
 
