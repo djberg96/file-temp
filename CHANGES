@@ -1,3 +1,9 @@
+= 1.4.0 - 12-Oct-2019
+* Changed license to Apache-2.0.
+* VERSION constant now lives in a single place, and is frozen.
+* Added metadata to the gemspec.
+* Updated cert.
+
 = 1.3.0 - 9-Apr-2016
 * This gem is now signed.
 * Added a file-temp.rb file for convenience.
