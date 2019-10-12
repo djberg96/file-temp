@@ -1,5 +1,6 @@
 = 1.4.0 - 12-Oct-2019
 * Changed license to Apache-2.0.
+* VERSION constant now lives in a single place, and is frozen.
 * Added metadata to the gemspec.
 * Updated cert.
 
