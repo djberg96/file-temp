@@ -23,9 +23,6 @@ class File::Temp < File
 
   # :startdoc:
 
-  # The version of the file-temp library.
-  VERSION = '1.3.0'
-
   # The temporary directory used on MS Windows or Unix.
   TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || Dir.tmpdir
 

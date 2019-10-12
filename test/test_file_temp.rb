@@ -22,7 +22,8 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   test "library version is set to expected value" do
-    assert_equal('1.3.0', File::Temp::VERSION)
+    assert_equal('1.4.0', File::Temp::VERSION)
+    assert_true(File::Temp::VERSION.frozen?)
   end
 
   # Fails with JRuby, not sure why.
