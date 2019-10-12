@@ -2,9 +2,9 @@ require 'rubygems'
 
 Gem::Specification.new do |spec|
   spec.name       = 'file-temp'
-  spec.version    = '1.3.0'
+  spec.version    = '1.4.0'
   spec.author     = 'Daniel J. Berger'
-  spec.license    = 'Artistic 2.0'
+  spec.license    = 'Apache-2.0'
   spec.email      = 'djberg96@gmail.com'
   spec.homepage   = 'http://github.com/djberg96/file-temp'
   spec.summary    = 'An alternative way to generate temp files'
@@ -17,6 +17,15 @@ Gem::Specification.new do |spec|
   spec.add_dependency('ffi', '>= 1.0.0')
   spec.add_development_dependency('test-unit')
   spec.add_development_dependency('rake')
+
+  spec.metadata = {
+    'homepage_uri'      => 'https://github.com/djberg96/file-temp',
+    'bug_tracker_uri'   => 'https://github.com/djberg96/file-temp/issues',
+    'changelog_uri'     => 'https://github.com/djberg96/file-temp/blob/master/CHANGES',
+    'documentation_uri' => 'https://github.com/djberg96/file-temp/wiki',
+    'source_code_uri'   => 'https://github.com/djberg96/file-temp',
+    'wiki_uri'          => 'https://github.com/djberg96/file-temp/wiki'
+  }
 
   spec.description = <<-EOF
     The file-temp library provides an alternative approach to generating
