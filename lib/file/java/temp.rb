@@ -57,10 +57,10 @@ class File::Temp < File
   # Generates a unique file name based on your tmpdir, or whichever
   # directory you specify.
   #
-  def self.temp_name
-    file = java.io.File.createTempFile('rb_file_temp_', nil)
+  def self.temp_name(directory = TMPDIR)
+    file = java.io.File.createTempFile('rb_file_temp_', nil, java.io.File.new(directory))
     file.deleteOnExit
-    file.getName
+    directory + file.getName
   end
 
   # Identical to the File#close method except that we also finalize
