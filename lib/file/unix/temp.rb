@@ -30,12 +30,12 @@ class File::Temp < File
   # constructor is true.
   attr_reader :path
 
-  # Creates a new, anonymous, temporary file in your File::Temp::TMPDIR
-  # directory
+  # Creates a new, anonymous, temporary file in your tmpdir, or whichever
+  # directory you specifiy.
   #
   # If the +delete+ option is set to true (the default) then the temporary file
   # will be deleted automatically as soon as all references to it are closed.
-  # Otherwise, the file will live on in your File::Temp::TMPDIR path.
+  # Otherwise, the file will live on in your tmpdir path.
   #
   # If the +delete+ option is set to false, then the file is not deleted. In
   # addition, you can supply a string +template+ that the system replaces with
@@ -47,7 +47,7 @@ class File::Temp < File
   #
   # Example:
   #
-  #    fh = File::Temp.new(true, 'rb_file_temp_XXXXXX') => file
+  #    fh = File::Temp.new(delete: true, template: 'rb_file_temp_XXXXXX') => file
   #    fh.puts 'hello world'
   #    fh.close
   #

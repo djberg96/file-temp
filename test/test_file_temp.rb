@@ -102,7 +102,7 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   test "temp path is not nil if delete option is false" do
-    @fh = File::Temp.new(:delete => false)
+    @fh = File::Temp.new(delete: false)
     assert_not_nil(@fh.path)
   end
 
