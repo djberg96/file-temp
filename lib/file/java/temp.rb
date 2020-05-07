@@ -41,7 +41,7 @@ class File::Temp < File
     # For consistency between implementations, convert errors here
     # to Errno::EINVAL.
     begin
-      @file = java.io.File.createTempFile(template, nil, directory)
+      @file = java.io.File.createTempFile(template, nil, java.io.File.new(directory))
     rescue NativeException => err
       raise SystemCallError.new(22), template # 22 is EINVAL
     end
@@ -57,12 +57,10 @@ class File::Temp < File
   # Generates a unique file name based on your tmpdir, or whichever
   # directory you specify.
   #
-  def self.temp_name(directory = TMPDIR)
-    file = java.io.File.createTempFile('rb_file_temp_', nil, directory)
+  def self.temp_name
+    file = java.io.File.createTempFile('rb_file_temp_', nil)
     file.deleteOnExit
-    name = file.getName
-    file.finalize
-    name
+    file.getName
   end
 
   # Identical to the File#close method except that we also finalize
