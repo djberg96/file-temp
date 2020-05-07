@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.files      = Dir['**/*'].delete_if{ |item| item.include?('git') }
   spec.cert_chain = Dir['certs/*']
 
-  spec.extra_rdoc_files = ['CHANGES', 'README', 'MANIFEST']
+  spec.extra_rdoc_files = ['CHANGES.rdoc', 'README.rdoc', 'MANIFEST.rdoc']
 
   spec.add_dependency('ffi', '>= 1.0.0')
   spec.add_development_dependency('test-unit')
