@@ -23,19 +23,19 @@ class File::Temp < File
 
   # :startdoc:
 
-  # The temporary directory used on MS Windows or Unix.
+  # The temporary directory used on MS Windows or Unix by default.
   TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || Dir.tmpdir
 
   # The name of the temporary file. Set to nil if the +delete+ option to the
   # constructor is true.
   attr_reader :path
 
-  # Creates a new, anonymous, temporary file in your File::Temp::TMPDIR
-  # directory
+  # Creates a new, anonymous, temporary file in your tmpdir, or whichever
+  # directory you specifiy.
   #
   # If the +delete+ option is set to true (the default) then the temporary file
   # will be deleted automatically as soon as all references to it are closed.
-  # Otherwise, the file will live on in your File::Temp::TMPDIR path.
+  # Otherwise, the file will live on in your tmpdir path.
   #
   # If the +delete+ option is set to false, then the file is not deleted. In
   # addition, you can supply a string +template+ that the system replaces with
@@ -47,11 +47,11 @@ class File::Temp < File
   #
   # Example:
   #
-  #    fh = File::Temp.new(true, 'rb_file_temp_XXXXXX') => file
+  #    fh = File::Temp.new(delete: true, template: 'rb_file_temp_XXXXXX') => file
   #    fh.puts 'hello world'
   #    fh.close
   #
-  def initialize(delete = true, template = 'rb_file_temp_XXXXXX')
+  def initialize(delete: true, template: 'rb_file_temp_XXXXXX', directory: TMPDIR)
     @fptr = nil
 
     if delete
@@ -60,16 +60,14 @@ class File::Temp < File
     else
       begin
         omask = File.umask(077)
-
         ptr = FFI::MemoryPointer.from_string(template)
-
         str = mktemp(ptr)
 
         if str.nil? || str.empty?
           raise SystemCallError.new('mktemp', FFI.errno)
         end
 
-        @path = File.join(TMPDIR, ptr.read_string)
+        @path = File.join(directory, ptr.read_string)
       ensure
         File.umask(omask)
       end

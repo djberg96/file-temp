@@ -22,7 +22,7 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   test "library version is set to expected value" do
-    assert_equal('1.4.0', File::Temp::VERSION)
+    assert_equal('1.5.0', File::Temp::VERSION)
     assert_true(File::Temp::VERSION.frozen?)
   end
 
@@ -48,33 +48,33 @@ class TC_File_Temp < Test::Unit::TestCase
 
   test "constructor works as expected with false auto delete option" do
     assert_nothing_raised{
-      @fh = File::Temp.new(false)
+      @fh = File::Temp.new(:delete => false)
       @fh.print "hello"
       @fh.close
     }
   end
 
   test "constructor accepts and uses an optional template as expected" do
-    assert_nothing_raised{ File::Temp.new(false, 'temp_foo_XXXXXX').close }
+    assert_nothing_raised{ File::Temp.new(:delete => false, :template => 'temp_foo_XXXXXX').close }
     assert_true(Dir["#{@dir}/temp_foo*"].length >= 1)
   end
 
   test "constructor with false auto delete and block works as expected" do
-    assert_nothing_raised{ File::Temp.open(false, 'temp_foo_XXXXXX'){ |fh| fh.puts "hello" } }
+    assert_nothing_raised{ File::Temp.open(:delete => false, :template => 'temp_foo_XXXXXX'){ |fh| fh.puts "hello" } }
     assert_true(Dir["#{@dir}/temp_foo*"].length >= 1)
   end
 
-  test "second argument to constructor must be a string" do
-    assert_raise(TypeError, ArgumentError){ @fh = File::Temp.new(false, 1) }
+  test "template argument must be a string" do
+    assert_raise(TypeError, ArgumentError){ @fh = File::Temp.new(:delete => false, :template => 1) }
   end
 
   test "an error is raised if a custom template is invalid" do
     omit_if(OSX)
-    assert_raise(Errno::EINVAL){ File::Temp.new(false, 'xx') }
+    assert_raise(Errno::EINVAL){ File::Temp.new(:delete => false, :template => 'xx') }
   end
 
-  test "constructor accepts a maximum of two arguments" do
-    assert_raise(ArgumentError){ @fh = File::Temp.new(true, 'temp_bar_XXXXX', 1) }
+  test "constructor accepts a maximum of three arguments" do
+    assert_raise(ArgumentError){ @fh = File::Temp.new(:delete => true, :template => 'temp_bar_XXXXX', :directory => Dir.pwd, :bogus => 1) }
   end
 
   test "temp_name basic functionality" do
@@ -102,7 +102,7 @@ class TC_File_Temp < Test::Unit::TestCase
   end
 
   test "temp path is not nil if delete option is false" do
-    @fh = File::Temp.new(false)
+    @fh = File::Temp.new(delete: false)
     assert_not_nil(@fh.path)
   end
 

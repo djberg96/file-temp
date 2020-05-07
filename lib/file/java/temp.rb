@@ -8,8 +8,8 @@ class File::Temp < File
   # The name of the temporary file.
   attr_reader :path
 
-  # Creates a new, anonymous, temporary file in your File::Temp::TMPDIR
-  # directory.
+  # Creates a new, anonymous, temporary file in your system's temporary
+  # directory, or whichever directory you specify.
   #
   # If the +delete+ option is set to true (the default) then the temporary file
   # will be deleted automatically as soon as all references to it are closed.
@@ -27,11 +27,11 @@ class File::Temp < File
   #
   # Example:
   #
-  #    fh = File::Temp.new(true, 'rb_file_temp_XXXXXX') => file
+  #    fh = File::Temp.new(delete: true, template: 'rb_file_temp_XXXXXX')
   #    fh.puts 'hello world'
   #    fh.close
   #
-  def initialize(delete = true, template = 'rb_file_temp_XXXXXX')
+  def initialize(delete: true, template: 'rb_file_temp_XXXXXX', directory: TMPDIR)
     raise TypeError unless template.is_a?(String)
 
     # Since Java uses a GUID extension to generate a unique file name
@@ -41,7 +41,7 @@ class File::Temp < File
     # For consistency between implementations, convert errors here
     # to Errno::EINVAL.
     begin
-      @file = java.io.File.createTempFile(template, nil)
+      @file = java.io.File.createTempFile(template, nil, java.io.File.new(directory))
     rescue NativeException => err
       raise SystemCallError.new(22), template # 22 is EINVAL
     end
@@ -54,14 +54,13 @@ class File::Temp < File
     @path = path unless delete
   end
 
-  # Generates a unique file name.
+  # Generates a unique file name based on your tmpdir, or whichever
+  # directory you specify.
   #
-  def self.temp_name
-    file = java.io.File.createTempFile('rb_file_temp_', nil)
+  def self.temp_name(directory = TMPDIR)
+    file = java.io.File.createTempFile('rb_file_temp_', nil, java.io.File.new(directory))
     file.deleteOnExit
-    name = file.getName
-    file.finalize
-    name
+    directory + file.getName
   end
 
   # Identical to the File#close method except that we also finalize
