@@ -23,7 +23,7 @@ class File::Temp < File
 
   # :startdoc:
 
-  # The temporary directory used on MS Windows or Unix.
+  # The temporary directory used on MS Windows or Unix by default.
   TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['TMPDIR'] || Dir.tmpdir
 
   # The name of the temporary file. Set to nil if the +delete+ option to the
@@ -51,7 +51,7 @@ class File::Temp < File
   #    fh.puts 'hello world'
   #    fh.close
   #
-  def initialize(delete = true, template = 'rb_file_temp_XXXXXX')
+  def initialize(delete: true, template: 'rb_file_temp_XXXXXX', directory: TMPDIR)
     @fptr = nil
 
     if delete
@@ -60,16 +60,14 @@ class File::Temp < File
     else
       begin
         omask = File.umask(077)
-
         ptr = FFI::MemoryPointer.from_string(template)
-
         str = mktemp(ptr)
 
         if str.nil? || str.empty?
           raise SystemCallError.new('mktemp', FFI.errno)
         end
 
-        @path = File.join(TMPDIR, ptr.read_string)
+        @path = File.join(directory, ptr.read_string)
       ensure
         File.umask(omask)
       end
