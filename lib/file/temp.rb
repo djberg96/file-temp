@@ -1,6 +1,6 @@
 class File::Temp < File
   # The version of the file-temp library
-  VERSION = '1.4.0'.freeze
+  VERSION = '1.5.0'.freeze
 end
 
 if RUBY_PLATFORM == 'java'
