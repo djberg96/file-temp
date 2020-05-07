@@ -53,7 +53,7 @@ class File::Temp < File
 
   # :startdoc:
 
-  # The temporary directory used on MS Windows or Unix.
+  # The temporary directory used on MS Windows or Unix by default.
   TMPDIR = ENV['TEMP'] || ENV['TMP'] || ENV['USERPROFILE'] || Dir.tmpdir
 
   # The name of the temporary file. Set to nil if the +delete+ option to the
@@ -61,7 +61,7 @@ class File::Temp < File
   attr_reader :path
 
   # Creates a new, anonymous, temporary file in your File::Temp::TMPDIR
-  # directory
+  # directory, or whichever directory you specify.
   #
   # If the +delete+ option is set to true (the default) then the temporary file
   # will be deleted automatically as soon as all references to it are closed.
@@ -77,11 +77,11 @@ class File::Temp < File
   #
   # Example:
   #
-  #    fh = File::Temp.new(true, 'rb_file_temp_XXXXXX') => file
+  #    fh = File::Temp.new(delete: true, template: 'rb_file_temp_XXXXXX')
   #    fh.puts 'hello world'
   #    fh.close
   #
-  def initialize(delete = true, template = 'rb_file_temp_XXXXXX')
+  def initialize(delete: true, template: 'rb_file_temp_XXXXXX', directory: TMPDIR)
     @fptr = nil
 
     if delete
@@ -90,14 +90,12 @@ class File::Temp < File
     else
       begin
         omask = File.umask(077)
-
         ptr = FFI::MemoryPointer.from_string(template)
-
         errno = mktemp_s(ptr, ptr.size)
 
         raise SystemCallError.new('mktemp_s', errno) if errno != 0
 
-        @path = File.join(TMPDIR, ptr.read_string)
+        @path = File.join(directory, ptr.read_string)
         @path.tr!(File::SEPARATOR, File::ALT_SEPARATOR)
       ensure
         File.umask(omask)
@@ -120,20 +118,21 @@ class File::Temp < File
     fclose(@fptr) if @fptr
   end
 
-  # Generates a unique file name.
+  # Generates a unique file name based on your default temporary directory,
+  # or whichever directory you specify.
   #
   # Note that a file is not actually generated on the filesystem.
   #--
   # NOTE: One quirk of the Windows function is that, after the first call, it
   # adds a file extension of sequential numbers in base 32, e.g. .1-.1vvvvvu.
   #
-  def self.temp_name
+  def self.temp_name(directory: TMPDIR)
     ptr = FFI::MemoryPointer.new(:char, 1024)
     errno = tmpnam_s(ptr, ptr.size)
 
     raise SystemCallError.new('tmpnam_s', errno) if errno != 0
 
-    TMPDIR + ptr.read_string + 'tmp'
+    directory + ptr.read_string + 'tmp'
   end
 
   private
