@@ -1,6 +1,6 @@
-= 1.5.0 - ???
+= 1.5.0 - 8-May-2020
 * Switched to keyword arguments.
-* Added the ability to specify a directory.
+* Added the ability to specify a tmp directory.
 * Updates to the JRuby version, removed some code that no longer worked, and
   added support for specifying your own directory.
 * Added a LICENSE file to the distro as part of the Apache-2.0 requirement.
