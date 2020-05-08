@@ -4,6 +4,7 @@
 * Updates to the JRuby version, removed some code that no longer worked, and
   added support for specifying your own directory.
 * Added a LICENSE file to the distro as part of the Apache-2.0 requirement.
+* Added explicit .rdoc extensions to the README, CHANGES and MANIFEST files.
 
 = 1.4.0 - 12-Oct-2019
 * Changed license to Apache-2.0.
