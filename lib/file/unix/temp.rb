@@ -56,6 +56,7 @@ class File::Temp < File
 
     if delete
       @fptr = tmpfile()
+      raise SystemCallError.new('tmpfile', FFI.errno) if @fptr.null?
       fd = _fileno(@fptr)
     else
       begin
@@ -80,13 +81,17 @@ class File::Temp < File
     end
   end
 
-  # The close method was overridden to ensure the internal file pointer we
-  # created in the constructor is closed. It is otherwise identical to the
-  # File#close method.
+  # The close method was overridden to ensure the internal file pointer that we
+  # potentially created in the constructor is closed. It is otherwise identical
+  # to the File#close method.
+  #--
+  # This is probably unnecessary since Ruby will close the fd, and in reality
+  # the fclose function probably fails with an Errno::EBADF. Consequently
+  # I will let it silently fail as a no-op.
   #
   def close
     super
-    fclose(@fptr) if @fptr
+    fclose(@fptr) if @fptr && !@fptr.null?
   end
 
   # Generates a unique file name.
