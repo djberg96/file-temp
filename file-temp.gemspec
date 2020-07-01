@@ -2,7 +2,7 @@ require 'rubygems'
 
 Gem::Specification.new do |spec|
   spec.name       = 'file-temp'
-  spec.version    = '1.6.0'
+  spec.version    = '1.7.0'
   spec.author     = 'Daniel J. Berger'
   spec.license    = 'Apache-2.0'
   spec.email      = 'djberg96@gmail.com'
@@ -14,8 +14,8 @@ Gem::Specification.new do |spec|
 
   spec.extra_rdoc_files = ['CHANGES.rdoc', 'README.rdoc', 'MANIFEST.rdoc']
 
-  spec.add_dependency('ffi', '>= 1.0.0')
-  spec.add_development_dependency('test-unit')
+  spec.add_dependency('ffi', '~> 1.1')
+  spec.add_development_dependency('rspec', '~> 3.9')
   spec.add_development_dependency('rake')
 
   spec.metadata = {
