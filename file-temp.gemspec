@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.email      = 'djberg96@gmail.com'
   spec.homepage   = 'http://github.com/djberg96/file-temp'
   spec.summary    = 'An alternative way to generate temp files'
-  spec.test_file  = 'test/test_file_temp.rb'
+  spec.test_file  = 'spec/file_temp_spec.rb'
   spec.files      = Dir['**/*'].delete_if{ |item| item.include?('git') }
   spec.cert_chain = Dir['certs/*']
 
