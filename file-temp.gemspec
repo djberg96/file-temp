@@ -2,20 +2,20 @@ require 'rubygems'
 
 Gem::Specification.new do |spec|
   spec.name       = 'file-temp'
-  spec.version    = '1.6.0'
+  spec.version    = '1.7.0'
   spec.author     = 'Daniel J. Berger'
   spec.license    = 'Apache-2.0'
   spec.email      = 'djberg96@gmail.com'
   spec.homepage   = 'http://github.com/djberg96/file-temp'
   spec.summary    = 'An alternative way to generate temp files'
-  spec.test_file  = 'test/test_file_temp.rb'
+  spec.test_file  = 'spec/file_temp_spec.rb'
   spec.files      = Dir['**/*'].delete_if{ |item| item.include?('git') }
   spec.cert_chain = Dir['certs/*']
 
   spec.extra_rdoc_files = ['CHANGES.rdoc', 'README.rdoc', 'MANIFEST.rdoc']
 
-  spec.add_dependency('ffi', '>= 1.0.0')
-  spec.add_development_dependency('test-unit')
+  spec.add_dependency('ffi', '~> 1.1')
+  spec.add_development_dependency('rspec', '~> 3.9')
   spec.add_development_dependency('rake')
 
   spec.metadata = {
