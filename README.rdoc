@@ -2,7 +2,7 @@
 The file-temp library is an alternate way to handle tempfile generation.
 
 == Requirements
-* ffi 1.0.0 or later
+* ffi 1.1.0 or later
 
 == Installation
    gem install file-temp
