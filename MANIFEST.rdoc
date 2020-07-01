@@ -10,4 +10,4 @@
 * lib/file/java/temp.rb
 * lib/file/unix/temp.rb
 * lib/file/windows/temp.rb
-* test/test_file_temp.rb
+* spec/file_temp_spec.rb
