@@ -51,7 +51,7 @@ class File::Temp < File
   #    fh.puts 'hello world'
   #    fh.close
   #
-  def initialize(delete: true, template: 'rb_file_temp_XXXXXX', directory: TMPDIR, options: {})
+  def initialize(delete: true, template: 'rb_file_temp_XXXXXX', directory: TMPDIR, **options)
     @fptr = nil
 
     if delete
@@ -77,9 +77,9 @@ class File::Temp < File
     options[:mode] ||= 'wb+'
 
     if delete
-      super(fd, options)
+      super(fd, **options)
     else
-      super(@path, options)
+      super(@path, **options)
     end
   end
 
