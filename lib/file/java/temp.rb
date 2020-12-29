@@ -31,7 +31,7 @@ class File::Temp < File
   #    fh.puts 'hello world'
   #    fh.close
   #
-  def initialize(delete: true, template: 'rb_file_temp_XXXXXX', directory: TMPDIR, options: {})
+  def initialize(delete: true, template: 'rb_file_temp_XXXXXX', directory: TMPDIR, **options)
     raise TypeError unless template.is_a?(String)
 
     # Since Java uses a GUID extension to generate a unique file name
@@ -50,7 +50,7 @@ class File::Temp < File
     options[:mode] ||= 'wb+'
 
     path = @file.getName
-    super(path, options)
+    super(path, **options)
 
     @path = path unless delete
   end

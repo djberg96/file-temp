@@ -1,3 +1,8 @@
+## 1.7.1 - 28-Dec-2020
+* Updated file option kwarg handling so that it's compatible with Ruby 3.x.
+* Switched from rdoc to markdown format since github isn't rendering rdoc properly.
+* Fixed up one of the specs.
+
 ## 1.7.0 - 1-Jul-2020
 * Replaced test-unit with rspec, and updated the tests.
 * Updated ffi dependency to 1.1.x.
