@@ -69,15 +69,15 @@ RSpec.describe File::Temp do
       expect(Dir["#{@dir}/temp_foo*"].length).to be >= 1
     end
 
-    example "constructor accepts a maximum of three arguments" do
+    example "other arguments are treated as file option arguments" do
       expect{
         @fh = File::Temp.new(
-          :delete     => true,
-          :template   => 'temp_bar_XXXXX',
-          :directory  => Dir.pwd,
-          :bogus      => 1
+          :delete    => true,
+          :template  => 'temp_bar_XXXXX',
+          :directory => Dir.pwd,
+          :mode      => 'xb'
         )
-      }.to raise_error(ArgumentError)
+      }.to raise_error(ArgumentError, /invalid access mode/)
     end
   end
 
