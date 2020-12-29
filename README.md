@@ -22,10 +22,10 @@ fh.close # => Tempfile still on your filesystem
 
 ## Motivation
 Unlike the tempfile library that ships with Ruby's standard library, this
-library uses your system's native +tmpfile+ or +mkstemp+ functions.
+library uses your system's native `tmpfile` or `mkstemp` functions.
    
 This library is also more secure because it restricts file permission via
-+umask+ for files created with +mkstemp+.
+`umask` for files created with `mkstemp`.
 
 Finally, this library subclasses the File class. This means you get almost
 exactly the same interface as the File class. The only difference is the
@@ -45,7 +45,7 @@ interface is otherwise identical.
 ## MS Windows
 You may need to use the mingw build in order to use this library.
 
-Also, there was a bug with the +GetTempFileName+ function on certain versions
+Also, there was a bug with the `GetTempFileName` function on certain versions
 of MS Windows that may cause a failure. However, if you'r patched up you
 should not see it. 
 
