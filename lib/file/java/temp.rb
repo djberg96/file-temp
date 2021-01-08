@@ -42,7 +42,7 @@ class File::Temp < File
     # to Errno::EINVAL.
     begin
       @file = java.io.File.createTempFile(template, nil, java.io.File.new(directory))
-    rescue NativeException => err
+    rescue NativeException
       raise SystemCallError.new(22), template # 22 is EINVAL
     end
 
