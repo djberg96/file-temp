@@ -8,7 +8,7 @@ The file-temp library is an alternate way to handle tempfile generation.
 `gem install file-temp`
 
 ## Synopsis
-```
+```ruby
 require 'file/temp'
 
 fh = File::Temp.new
