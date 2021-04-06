@@ -3,7 +3,7 @@ require 'rake/clean'
 require 'rspec/core/rake_task'
 
 CLEAN.include('**/*.tar', '**/*.zip', '**/*.gz', '**/*.bz2')
-CLEAN.include('**/*.rbc', '**/*.gem', '**/*.tmp')
+CLEAN.include('**/*.rbc', '**/*.gem', '**/*.tmp', '**/*.lock')
 
 namespace 'gem' do
   desc 'Create the file-temp gem'
