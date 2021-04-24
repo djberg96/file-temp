@@ -11,13 +11,13 @@ class File::Temp < File
 
   attach_function :_close, [:int], :int
   attach_function :fclose, [:pointer], :int
-  attach_function :_fdopen, [:int, :string], :pointer
+  attach_function :_fdopen, %i[int string], :pointer
   attach_function :_fileno, [:pointer], :int
   attach_function :_get_errno, [:pointer], :int
-  attach_function :_open, [:string, :int, :int], :int
-  attach_function :_open_osfhandle, [:long, :int], :int
-  attach_function :tmpnam_s, [:pointer, :size_t], :int
-  attach_function :mktemp_s, :_mktemp_s, [:pointer, :size_t], :int
+  attach_function :_open, %i[string int int], :int
+  attach_function :_open_osfhandle, %i[long int], :int
+  attach_function :tmpnam_s, %i[pointer size_t], :int
+  attach_function :mktemp_s, :_mktemp_s, %i[pointer size_t], :int
 
   private_class_method :_close, :fclose, :_fdopen, :_fileno, :_get_errno
   private_class_method :_open, :_open_osfhandle, :mktemp_s, :tmpnam_s
@@ -25,10 +25,10 @@ class File::Temp < File
   ffi_lib :kernel32
 
   attach_function :CloseHandle, [:long], :bool
-  attach_function :CreateFileW, [:buffer_in, :ulong, :ulong, :pointer, :ulong, :ulong, :ulong], :long
+  attach_function :CreateFileW, %i[buffer_in ulong ulong pointer ulong ulong ulong], :long
   attach_function :DeleteFileW, [:string], :bool
-  attach_function :GetTempPathW, [:ulong, :buffer_out], :ulong
-  attach_function :GetTempFileNameW, [:buffer_in, :string, :uint, :buffer_out], :uint
+  attach_function :GetTempPathW, %i[ulong buffer_out], :ulong
+  attach_function :GetTempFileNameW, %i[buffer_in string uint buffer_out], :uint
 
   private_class_method :_close, :_fdopen, :_open, :_open_osfhandle
   private_class_method :CloseHandle, :CreateFileW, :DeleteFileW
