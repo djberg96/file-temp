@@ -3,7 +3,7 @@ import java.lang.System
 
 class File::Temp < File
   # The temporary directory used on MS Windows or Unix.
-  TMPDIR = java.lang.System.getProperties["java.io.tmpdir"]
+  TMPDIR = java.lang.System.getProperties['java.io.tmpdir']
 
   # The name of the temporary file.
   attr_reader :path

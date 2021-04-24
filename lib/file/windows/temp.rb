@@ -153,7 +153,7 @@ class File::Temp < File
   #
   def get_temp_path
     buf = 0.chr * 1024
-    buf.encode!("UTF-16LE")
+    buf.encode!('UTF-16LE')
 
     if GetTempPathW(buf.size, buf) == 0
       raise SystemCallError, FFI.errno, 'GetTempPathW'
@@ -173,7 +173,7 @@ class File::Temp < File
   def tmpfile
     file_name = get_temp_path()
     buf = 0.chr * 1024
-    buf.encode!("UTF-16LE")
+    buf.encode!('UTF-16LE')
 
     if GetTempFileNameW(file_name, 'rb_', 0, buf) == 0
       raise SystemCallError, FFI.errno, 'GetTempFileNameW'
