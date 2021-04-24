@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class File::Temp < File
   # The version of the file-temp library
   VERSION = '1.7.1'.freeze
