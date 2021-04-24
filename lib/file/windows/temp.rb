@@ -3,6 +3,7 @@
 require 'ffi'
 require 'tmpdir'
 
+# The File::Temp class encapsulates temporary files. It is a subclass of File.
 class File::Temp < File
   extend FFI::Library
   ffi_lib FFI::Library::LIBC
