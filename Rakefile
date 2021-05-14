@@ -9,9 +9,9 @@ namespace 'gem' do
   desc 'Create the file-temp gem'
   task :create => [:clean] do
     require 'rubygems/package'
-    spec = eval(IO.read('file-temp.gemspec'))
+    spec = Gem::Specification.load('file-temp.gemspec')
     spec.signing_key = File.join(Dir.home, '.ssh', 'gem-private_key.pem')
-    Gem::Package.build(spec, true)
+    Gem::Package.build(spec)
   end
 
   desc 'Install the file-temp gem'
