@@ -7,6 +7,9 @@ The file-temp library is an alternate way to handle tempfile generation.
 ## Installation
 `gem install file-temp`
 
+## Adding the trusted cert
+`gem cert --add <(curl -Ls https://raw.githubusercontent.com/djberg96/file-temp/main/certs/djberg96_pub.pem)`
+
 ## Synopsis
 ```ruby
 require 'file/temp'
