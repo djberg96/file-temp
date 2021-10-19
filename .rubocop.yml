@@ -17,6 +17,9 @@ Style/MethodCallWithoutArgsParentheses:
   Enabled: false
 Style/NumericPredicate:
   Enabled: false
+Style/BlockDelimiters:
+  Exclude:
+    - 'spec/**/*'
 Style/ClassAndModuleChildren:
   Enabled: false
 Style/ConditionalAssignment:
