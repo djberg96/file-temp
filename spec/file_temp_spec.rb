@@ -35,7 +35,7 @@ RSpec.describe File::Temp do
   context "threads" do
     example "library works as expected with multiple threads" do
       threads = []
-      expect{ 100.times{ threads << Thread.new{ File::Temp.new }}}.not_to raise_error
+      expect{ 100.times{ threads << Thread.new{ described_class.new }}}.not_to raise_error
       expect{ threads.each{ |t| t.join }.not_to raise_error }
     end
   end
@@ -43,7 +43,7 @@ RSpec.describe File::Temp do
   context "constructor" do
     example "constructor works as expected with default auto delete option" do
       expect{
-        @fh = File::Temp.new
+        @fh = described_class.new
         @fh.print "hello"
         @fh.close
       }.not_to raise_error
@@ -51,27 +51,27 @@ RSpec.describe File::Temp do
 
     example "constructor works as expected with false auto delete option" do
       expect{
-        @fh = File::Temp.new(:delete => false)
+        @fh = described_class.new(:delete => false)
         @fh.print "hello"
         @fh.close
       }.not_to raise_error
     end
 
     example "constructor accepts and uses an optional template as expected" do
-      expect{ File::Temp.new(:delete => false, :template => 'temp_foo_XXXXXX').close }.not_to raise_error
+      expect{ described_class.new(:delete => false, :template => 'temp_foo_XXXXXX').close }.not_to raise_error
       expect(Dir["#{@dir}/temp_foo*"].length).to be >= 1
     end
 
     example "constructor with false auto delete and block works as expected" do
       expect{
-        File::Temp.open(:delete => false, :template => 'temp_foo_XXXXXX'){ |fh| fh.puts "hello" }
+        described_class.open(:delete => false, :template => 'temp_foo_XXXXXX'){ |fh| fh.puts "hello" }
       }.not_to raise_error
       expect(Dir["#{@dir}/temp_foo*"].length).to be >= 1
     end
 
     example "other arguments are treated as file option arguments" do
       expect{
-        @fh = File::Temp.new(
+        @fh = described_class.new(
           :delete    => true,
           :template  => 'temp_bar_XXXXX',
           :directory => Dir.pwd,
@@ -83,51 +83,51 @@ RSpec.describe File::Temp do
 
   context "template" do
     example "template argument must be a string" do
-      expect{ @fh = File::Temp.new(:delete => false, :template => 1) }.to raise_error(TypeError)
+      expect{ @fh = described_class.new(:delete => false, :template => 1) }.to raise_error(TypeError)
     end
 
     example "an error is raised if a custom template is invalid" do
       skip "skipped on OSX" if osx
-      expect{ File::Temp.new(:delete => false, :template => 'xx') }.to raise_error(Errno::EINVAL)
+      expect{ described_class.new(:delete => false, :template => 'xx') }.to raise_error(Errno::EINVAL)
     end
   end
 
   context "temp_name" do
     example "temp_name basic functionality" do
-      expect(File::Temp).to respond_to(:temp_name)
-      expect{ File::Temp.temp_name }.not_to raise_error
-      expect(File::Temp.temp_name).to be_kind_of(String)
+      expect(described_class).to respond_to(:temp_name)
+      expect{ described_class.temp_name }.not_to raise_error
+      expect(described_class.temp_name).to be_kind_of(String)
     end
 
     example "temp_name returns expected value" do
       if windows
-        expect( File.extname(File::Temp.temp_name)).to match(/^.*?\d*?tmp/)
+        expect( File.extname(described_class.temp_name)).to match(/^.*?\d*?tmp/)
       else
-        expect( File.extname(File::Temp.temp_name)).to eq('.tmp')
+        expect( File.extname(described_class.temp_name)).to eq('.tmp')
       end
     end
   end
 
   context "path" do
     example "temp path basic functionality" do
-      @fh = File::Temp.new
+      @fh = described_class.new
       expect(@fh).to respond_to(:path)
     end
 
     example "temp path is nil if delete option is true" do
-      @fh = File::Temp.new
+      @fh = described_class.new
       expect(@fh.path).to be_nil
     end
 
     example "temp path is not nil if delete option is false" do
-      @fh = File::Temp.new(delete: false)
+      @fh = described_class.new(delete: false)
       expect(@fh.path).not_to be_nil
     end
   end
 
   context "ffi" do
     example "ffi functions are private" do
-      methods = File::Temp.methods(false).map(&:to_s)
+      methods = described_class.methods(false).map(&:to_s)
       expect(methods).not_to include('_fileno')
       expect(methods).not_to include('mkstemp')
       expect(methods).not_to include('_umask')
