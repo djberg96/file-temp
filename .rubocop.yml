@@ -27,6 +27,8 @@ Layout/EmptyLineAfterGuardClause:
   Enabled: false
 Layout/CaseIndentation:
   IndentOneStep: true
+Layout/HashAlignment:
+  EnforcedHashRocketStyle: 'table'
 Layout/SpaceBeforeBlockBraces:
   Enabled: false
 Metrics/AbcSize:
