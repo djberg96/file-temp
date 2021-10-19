@@ -128,7 +128,7 @@ RSpec.describe File::Temp do
   end
 
   context 'ffi' do
-    example 'ffi functions are private' do
+    example 'ffi unix functions are private' do
       methods = described_class.methods(false).map(&:to_s)
       expect(methods).not_to include('_fileno')
       expect(methods).not_to include('mkstemp')
@@ -136,6 +136,9 @@ RSpec.describe File::Temp do
       expect(methods).not_to include('fclose')
       expect(methods).not_to include('strerror')
       expect(methods).not_to include('tmpnam')
+    end
+
+    example 'ffi windows functions are private' do
       expect(methods).not_to include('CloseHandle')
       expect(methods).not_to include('CreateFileA')
       expect(methods).not_to include('DeleteFileA')
