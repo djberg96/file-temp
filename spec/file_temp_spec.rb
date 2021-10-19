@@ -22,7 +22,7 @@ RSpec.describe File::Temp do
 
   context 'constants' do
     example 'library version is set to expected value' do
-      expect( File::Temp::VERSION).to eq('1.7.1')
+      expect(File::Temp::VERSION).to eq('1.7.1')
       expect(File::Temp::VERSION).to be_frozen
     end
 
@@ -101,9 +101,9 @@ RSpec.describe File::Temp do
 
     example 'temp_name returns expected value' do
       if windows
-        expect( File.extname(described_class.temp_name)).to match(/^.*?\d*?tmp/)
+        expect(File.extname(described_class.temp_name)).to match(/^.*?\d*?tmp/)
       else
-        expect( File.extname(described_class.temp_name)).to eq('.tmp')
+        expect(File.extname(described_class.temp_name)).to eq('.tmp')
       end
     end
   end
