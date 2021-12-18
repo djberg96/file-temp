@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'java'
-import java.lang.System
 
 class File::Temp < File
   # The temporary directory used on MS Windows or Unix.
@@ -71,6 +70,6 @@ class File::Temp < File
   #
   def close
     super
-    @file.finalize
+    @file.finalize if @file.respond_to?(:finalize)
   end
 end
