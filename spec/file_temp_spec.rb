@@ -79,7 +79,7 @@ RSpec.describe File::Temp do
           :directory => Dir.pwd,
           :mode      => 'xb'
         )
-      }.to raise_error(ArgumentError, /invalid access mode/)
+      }.to raise_error(ArgumentError, /invalid.*?(access)?.*?mode/) # Truffleruby missing the word 'access'
     end
   end
 
