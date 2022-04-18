@@ -34,6 +34,8 @@ Style/ConditionalAssignment:
   Enabled: false
 Style/HashSyntax:
   Enabled: false
+Style/IfInsideElse:
+  Enabled: false
 Style/IfUnlessModifier:
   Enabled: false
 Style/NumericLiteralPrefix:
