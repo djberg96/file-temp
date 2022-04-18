@@ -30,6 +30,8 @@ Style/ConditionalAssignment:
   Enabled: false
 Style/HashSyntax:
   Enabled: false
+Style/NumericLiteralPrefix:
+  Enabled: false
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
 Layout/CaseIndentation:
@@ -52,3 +54,6 @@ Metrics/PerceivedComplexity:
   Enabled: false
 Naming/RescuedExceptionsVariableName:
   PreferredName: 'err'
+Naming/FileName:
+  Exclude:
+    - 'lib/file-temp.rb'
