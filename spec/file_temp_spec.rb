@@ -128,22 +128,25 @@ RSpec.describe File::Temp do
   end
 
   context 'ffi' do
-    example 'ffi unix functions are private' do
-      methods = described_class.methods(false).map(&:to_s)
-      expect(methods).not_to include('_fileno')
-      expect(methods).not_to include('mkstemp')
-      expect(methods).not_to include('_umask')
-      expect(methods).not_to include('fclose')
-      expect(methods).not_to include('strerror')
-      expect(methods).not_to include('tmpnam')
+    before do
+      @methods = described_class.methods(false).map(&:to_s)
     end
 
-    example 'ffi windows functions are private' do
-      expect(methods).not_to include('CloseHandle')
-      expect(methods).not_to include('CreateFileA')
-      expect(methods).not_to include('DeleteFileA')
-      expect(methods).not_to include('GetTempPathA')
-      expect(methods).not_to include('GetTempFileNameA')
+    example 'ffi unix functions are private', :unix do
+      expect(@methods).not_to include('_fileno')
+      expect(@methods).not_to include('mkstemp')
+      expect(@methods).not_to include('_umask')
+      expect(@methods).not_to include('fclose')
+      expect(@methods).not_to include('strerror')
+      expect(@methods).not_to include('tmpnam')
+    end
+
+    example 'ffi windows functions are private', :windows do
+      expect(@methods).not_to include('CloseHandle')
+      expect(@methods).not_to include('CreateFileA')
+      expect(@methods).not_to include('DeleteFileA')
+      expect(@methods).not_to include('GetTempPathA')
+      expect(@methods).not_to include('GetTempFileNameA')
     end
   end
 
