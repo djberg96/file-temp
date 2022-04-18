@@ -60,6 +60,8 @@ Metrics/PerceivedComplexity:
   Enabled: false
 Naming/RescuedExceptionsVariableName:
   PreferredName: 'err'
+Naming/AccessorMethodName:
+  Enabled: false
 Naming/FileName:
   Exclude:
     - 'lib/file-temp.rb'
