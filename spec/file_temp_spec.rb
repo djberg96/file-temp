@@ -37,7 +37,7 @@ RSpec.describe File::Temp do
   context 'threads' do
     example 'library works as expected with multiple threads' do
       threads = []
-      expect{ 100.times{ threads << Thread.new{ described_class.new }}}.not_to raise_error
+      expect{ 100.times{ threads << Thread.new{ described_class.new } } }.not_to raise_error
       expect{ threads.each(&:join) }.not_to raise_error
     end
   end
