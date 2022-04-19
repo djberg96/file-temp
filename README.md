@@ -51,7 +51,7 @@ interface is otherwise identical.
 You may need to use the mingw build in order to use this library.
 
 Also, there was a bug with the `GetTempFileName` function on certain versions
-of MS Windows that may cause a failure. However, if you'r patched up you
+of MS Windows that may cause a failure. However, if you're patched up you
 should not see it. 
 
 ## License
