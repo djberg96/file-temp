@@ -22,6 +22,21 @@ RSpec.describe File::Temp do
     @dir = @dir.tr('\\', '/') if windows
   end
 
+  after do
+    @dir = nil
+    @template = nil
+    @fh.close if @fh && !@fh.closed?
+    @fh = nil
+
+    Dir['temp_*'].each{ |f| File.delete(f) }
+    Dir['rb_file_temp_*'].each{ |f| File.delete(f) }
+
+    Dir.chdir(File::Temp::TMPDIR) do
+      Dir['temp_*'].each{ |f| File.delete(f) }
+      Dir['rb_file_temp_*'].each{ |f| File.delete(f) }
+    end
+  end
+
   context 'constants' do
     example 'library version is set to expected value' do
       expect(File::Temp::VERSION).to eq('1.7.1')
@@ -150,18 +165,4 @@ RSpec.describe File::Temp do
     end
   end
 
-  after do
-    @dir = nil
-    @template = nil
-    @fh.close if @fh && !@fh.closed?
-    @fh = nil
-
-    Dir['temp_*'].each{ |f| File.delete(f) }
-    Dir['rb_file_temp_*'].each{ |f| File.delete(f) }
-
-    Dir.chdir(File::Temp::TMPDIR) do
-      Dir['temp_*'].each{ |f| File.delete(f) }
-      Dir['rb_file_temp_*'].each{ |f| File.delete(f) }
-    end
-  end
 end
