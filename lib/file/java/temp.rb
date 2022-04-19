@@ -2,6 +2,7 @@
 
 require 'java'
 
+# The File::Temp class encapsulates temporary files. It is a subclass of File.
 class File::Temp < File
   # The temporary directory used on MS Windows or Unix.
   TMPDIR = java.lang.System.getProperties['java.io.tmpdir']

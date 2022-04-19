@@ -22,6 +22,21 @@ RSpec.describe File::Temp do
     @dir = @dir.tr('\\', '/') if windows
   end
 
+  after do
+    @dir = nil
+    @template = nil
+    @fh.close if @fh && !@fh.closed?
+    @fh = nil
+
+    Dir['temp_*'].each{ |f| File.delete(f) }
+    Dir['rb_file_temp_*'].each{ |f| File.delete(f) }
+
+    Dir.chdir(File::Temp::TMPDIR) do
+      Dir['temp_*'].each{ |f| File.delete(f) }
+      Dir['rb_file_temp_*'].each{ |f| File.delete(f) }
+    end
+  end
+
   context 'constants' do
     example 'library version is set to expected value' do
       expect(File::Temp::VERSION).to eq('1.7.1')
@@ -37,7 +52,7 @@ RSpec.describe File::Temp do
   context 'threads' do
     example 'library works as expected with multiple threads' do
       threads = []
-      expect{ 100.times{ threads << Thread.new{ described_class.new }}}.not_to raise_error
+      expect{ 100.times{ threads << Thread.new{ described_class.new } } }.not_to raise_error
       expect{ threads.each(&:join) }.not_to raise_error
     end
   end
@@ -128,37 +143,25 @@ RSpec.describe File::Temp do
   end
 
   context 'ffi' do
-    example 'ffi unix functions are private' do
-      methods = described_class.methods(false).map(&:to_s)
-      expect(methods).not_to include('_fileno')
-      expect(methods).not_to include('mkstemp')
-      expect(methods).not_to include('_umask')
-      expect(methods).not_to include('fclose')
-      expect(methods).not_to include('strerror')
-      expect(methods).not_to include('tmpnam')
+    before do
+      @methods = described_class.methods(false).map(&:to_s)
     end
 
-    example 'ffi windows functions are private' do
-      expect(methods).not_to include('CloseHandle')
-      expect(methods).not_to include('CreateFileA')
-      expect(methods).not_to include('DeleteFileA')
-      expect(methods).not_to include('GetTempPathA')
-      expect(methods).not_to include('GetTempFileNameA')
+    example 'ffi unix functions are private', :unix do
+      expect(@methods).not_to include('_fileno')
+      expect(@methods).not_to include('mkstemp')
+      expect(@methods).not_to include('_umask')
+      expect(@methods).not_to include('fclose')
+      expect(@methods).not_to include('strerror')
+      expect(@methods).not_to include('tmpnam')
     end
-  end
 
-  after do
-    @dir = nil
-    @template = nil
-    @fh.close if @fh && !@fh.closed?
-    @fh = nil
-
-    Dir['temp_*'].each{ |f| File.delete(f) }
-    Dir['rb_file_temp_*'].each{ |f| File.delete(f) }
-
-    Dir.chdir(File::Temp::TMPDIR) do
-      Dir['temp_*'].each{ |f| File.delete(f) }
-      Dir['rb_file_temp_*'].each{ |f| File.delete(f) }
+    example 'ffi windows functions are private', :windows do
+      expect(@methods).not_to include('CloseHandle')
+      expect(@methods).not_to include('CreateFileA')
+      expect(@methods).not_to include('DeleteFileA')
+      expect(@methods).not_to include('GetTempPathA')
+      expect(@methods).not_to include('GetTempFileNameA')
     end
   end
 end

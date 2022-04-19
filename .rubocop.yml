@@ -1,16 +1,22 @@
 require: rubocop-rspec
 
-RSpec/MultipleExpectations:
-  Max: 4
 RSpec/ContextWording:
   Enabled: false
 RSpec/FilePath:
   SpecSuffixOnly: true
 RSpec/InstanceVariable:
   Enabled: false
+RSpec/ExampleLength:
+  Max: 10
+RSpec/MultipleExpectations:
+  Max: 6
 
 AllCops:
   NewCops: enable
+  Exclude:
+    - Rakefile
+    - Gemfile
+    - file-temp.gemspec
 Lint/AssignmentInCondition:
   Enabled: false
 Style/MethodCallWithoutArgsParentheses:
@@ -25,6 +31,12 @@ Style/ClassAndModuleChildren:
 Style/ConditionalAssignment:
   Enabled: false
 Style/HashSyntax:
+  Enabled: false
+Style/IfInsideElse:
+  Enabled: false
+Style/IfUnlessModifier:
+  Enabled: false
+Style/NumericLiteralPrefix:
   Enabled: false
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
@@ -48,3 +60,8 @@ Metrics/PerceivedComplexity:
   Enabled: false
 Naming/RescuedExceptionsVariableName:
   PreferredName: 'err'
+Naming/AccessorMethodName:
+  Enabled: false
+Naming/FileName:
+  Exclude:
+    - 'lib/file-temp.rb'
