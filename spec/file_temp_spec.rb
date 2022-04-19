@@ -164,5 +164,4 @@ RSpec.describe File::Temp do
       expect(@methods).not_to include('GetTempFileNameA')
     end
   end
-
 end
