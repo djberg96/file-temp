@@ -137,7 +137,7 @@ class File::Temp < File
 
     raise SystemCallError.new('tmpnam_s', errno) if errno != 0
 
-    directory + ptr.read_string + 'tmp'
+    directory + (ptr.read_string << 'tmp')
   end
 
   private
