@@ -19,6 +19,8 @@ AllCops:
     - file-temp.gemspec
 Lint/AssignmentInCondition:
   Enabled: false
+Style/FetchEnvVar:
+  Enabled: false
 Style/MethodCallWithoutArgsParentheses:
   Enabled: false
 Style/NumericPredicate:
