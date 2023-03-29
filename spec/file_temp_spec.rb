@@ -44,7 +44,7 @@ RSpec.describe File::Temp do
     end
 
     example 'TMPDIR constant is defined' do
-      expect(File::Temp::TMPDIR).to be_kind_of(String)
+      expect(File::Temp::TMPDIR).to be_a(String)
       expect(File::Temp::TMPDIR.size).to be > 0
     end
   end
@@ -113,7 +113,7 @@ RSpec.describe File::Temp do
     example 'temp_name basic functionality' do
       expect(described_class).to respond_to(:temp_name)
       expect{ described_class.temp_name }.not_to raise_error
-      expect(described_class.temp_name).to be_kind_of(String)
+      expect(described_class.temp_name).to be_a(String)
     end
 
     example 'temp_name returns expected value' do
