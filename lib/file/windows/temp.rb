@@ -178,7 +178,7 @@ class File::Temp < File
     buf = 0.chr * 1024
     buf.encode!('UTF-16LE')
 
-    if GetTempFileNameW(file_name, 'rb_', 0, buf) == 0
+    if GetTempFileNameW(file_name, String.new('rb_', encoding: 'UTF-16LE'), 0, buf) == 0
       raise SystemCallError, FFI.errno, 'GetTempFileNameW'
     end
 
