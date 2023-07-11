@@ -2,7 +2,7 @@
 
 class File::Temp < File
   # The version of the file-temp library
-  VERSION = '1.7.1'
+  VERSION = '1.7.2'
 end
 
 if RUBY_PLATFORM == 'java'
