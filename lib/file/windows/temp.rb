@@ -7,6 +7,7 @@ require 'tmpdir'
 class File::Temp < File
   extend FFI::Library
   ffi_lib FFI::Library::LIBC
+  ffi_convention :stdcall
 
   # :stopdoc:
 
@@ -158,11 +159,10 @@ class File::Temp < File
     buf = 0.chr * 1024
     buf.encode!('UTF-16LE')
 
-    if GetTempPathW(buf.size, buf) == 0
-      raise SystemCallError, FFI.errno, 'GetTempPathW'
-    end
+    rv = GetTempPathW(buf.size, buf)
+    raise SystemCallError, FFI.errno, 'GetTempPathW' if rv == 0
 
-    buf.strip.chop # remove trailing slash
+    buf[0, rv+2] # Characters plus null terminator
   end
 
   # The version of tmpfile() implemented by Microsoft is unacceptable.
@@ -174,7 +174,8 @@ class File::Temp < File
   # project.
   #
   def tmpfile
-    file_name = get_temp_path()
+    file_name = get_temp_path
+
     buf = 0.chr * 1024
     buf.encode!('UTF-16LE')
 
@@ -182,7 +183,7 @@ class File::Temp < File
       raise SystemCallError, FFI.errno, 'GetTempFileNameW'
     end
 
-    file_name = buf.strip
+    file_name = buf.strip + "\000\000".encode('UTF-16LE')
 
     handle = CreateFileW(
       file_name,
