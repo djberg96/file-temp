@@ -1,3 +1,8 @@
+## 1.7.2 - 11-Jul-2023
+* Fixed a bug in the Windows version where it would sometimes fail.
+* Dropped JRuby from the test matrix for now because of a bug.
+  See https://github.com/jruby/jruby/issues/7847 for more details.
+
 ## 1.7.1 - 28-Dec-2020
 * Updated file option kwarg handling so that it's compatible with Ruby 3.x.
 * Switched from rdoc to markdown format since github isn't rendering rdoc properly.
