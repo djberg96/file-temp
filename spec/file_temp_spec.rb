@@ -12,6 +12,7 @@ require 'file/temp'
 RSpec.describe File::Temp do
   let(:windows) { File::ALT_SEPARATOR }
   let(:osx) { RbConfig::CONFIG['host_os'] =~ /darwin/i }
+  let(:bsd) { RbConfig::CONFIG['host_os'] =~ /freebsd|dragonfly/i }
 
   before do
     @dir = File::Temp::TMPDIR
@@ -104,7 +105,7 @@ RSpec.describe File::Temp do
     end
 
     example 'an error is raised if a custom template is invalid' do
-      skip 'skipped on OSX' if osx
+      skip 'skipped on this platform' if osx || bsd
       expect{ described_class.new(:delete => false, :template => 'xx') }.to raise_error(Errno::EINVAL)
     end
   end
