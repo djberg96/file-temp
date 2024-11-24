@@ -25,7 +25,9 @@ Gem::Specification.new do |spec|
     'documentation_uri'     => 'https://github.com/djberg96/file-temp/wiki',
     'source_code_uri'       => 'https://github.com/djberg96/file-temp',
     'wiki_uri'              => 'https://github.com/djberg96/file-temp/wiki',
-    'rubygems_mfa_required' => 'true'
+    'rubygems_mfa_required' => 'true',
+    'github_repo'           => 'https://github.com/djberg96/file-temp',
+    'funding_uri'           => 'https://github.com/sponsors/djberg96'
   }
 
   spec.description = <<-EOF
