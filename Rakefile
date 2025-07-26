@@ -25,7 +25,10 @@ end
 RuboCop::RakeTask.new
 
 desc 'Run the test suite for the file-temp library'
-RSpec::Core::RakeTask.new(:spec)
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.verbose = false
+  t.rspec_opts = '-f documentation'
+end
 
 # Clean up afterwards
 Rake::Task[:spec].enhance do
