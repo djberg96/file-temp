@@ -51,7 +51,7 @@ class File::Temp < File
     @file.deleteOnExit if delete
     options[:mode] ||= 'wb+'
 
-    path = @file.getName
+    path = @file.getAbsolutePath
     super(path, **options)
 
     @path = path unless delete

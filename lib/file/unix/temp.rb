@@ -31,7 +31,11 @@ class File::Temp < File
 
   # The name of the temporary file. Set to nil if the +delete+ option to the
   # constructor is true.
-  attr_reader :path
+  attr_writer :path
+
+  def path
+    @path || super
+  end
 
   # Creates a new, anonymous, temporary file in your tmpdir, or whichever
   # directory you specifiy.
@@ -56,6 +60,7 @@ class File::Temp < File
   #
   def initialize(delete: true, template: 'rb_file_temp_XXXXXX', directory: TMPDIR, **options)
     @fptr = nil
+    temp_path = nil
 
     if delete
       @fptr = tmpfile()
@@ -80,7 +85,7 @@ class File::Temp < File
           raise SystemCallError.new('mkstemp', FFI.errno)
         end
 
-        @path = ptr.read_string
+        temp_path = ptr.read_string
       ensure
         File.umask(omask)
       end
@@ -89,6 +94,8 @@ class File::Temp < File
     options[:mode] ||= 'wb+'
 
     super(fd, **options)
+
+    @path = temp_path
   end
 
   # The close method was overridden to ensure the internal file pointer that we
