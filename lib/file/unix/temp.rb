@@ -31,11 +31,7 @@ class File::Temp < File
 
   # The name of the temporary file. Set to nil if the +delete+ option to the
   # constructor is true.
-  attr_writer :path
-
-  def path
-    @path || super
-  end
+  attr_reader :path
 
   # Creates a new, anonymous, temporary file in your tmpdir, or whichever
   # directory you specifiy.
