@@ -92,6 +92,14 @@ class File::Temp < File
       @fptr = tmpfile()
       fd = _fileno(@fptr)
     else
+      unless template.is_a?(String)
+        raise TypeError, "template must be a String"
+      end
+
+      unless template.end_with?('XXXXXX')
+        raise ArgumentError, "template must end with 6 'X' characters"
+      end
+
       begin
         omask = File.umask(077)
         ptr = FFI::MemoryPointer.from_string(template)
