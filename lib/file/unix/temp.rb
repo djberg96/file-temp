@@ -62,6 +62,14 @@ class File::Temp < File
       raise SystemCallError.new('tmpfile', FFI.errno) if @fptr.null?
       fd = _fileno(@fptr)
     else
+      unless template.is_a?(String)
+        raise TypeError, "template must be a String"
+      end
+
+      unless template.end_with?('XXXXXX')
+        raise ArgumentError, "template must end with 6 'X' characters"
+      end
+
       begin
         omask = File.umask(077)
         full_template = File.join(directory, template)
