@@ -2,6 +2,7 @@
 
 require 'ffi'
 require 'tmpdir'
+require 'securerandom'
 
 # The File::Temp class encapsulates temporary files. It is a subclass of File.
 class File::Temp < File
@@ -16,11 +17,10 @@ class File::Temp < File
   attach_function :_fileno, :fileno, [:pointer], :int
   attach_function :strerror, [:int], :string
   attach_function :tmpfile, [], :pointer
-  attach_function :tmpnam, [:pointer], :string
-  attach_function :mktemp, [:pointer], :string
+  attach_function :mkstemp, [:pointer], :int
 
-  private_class_method :mktemp, :strerror, :tmpfile
-  private_class_method :tmpnam, :fclose, :_fileno
+  private_class_method :mkstemp, :strerror, :tmpfile
+  private_class_method :fclose, :_fileno
 
   public
 
@@ -42,7 +42,7 @@ class File::Temp < File
   #
   # If the +delete+ option is set to false, then the file is not deleted. In
   # addition, you can supply a string +template+ that the system replaces with
-  # a unique filename. This template should end with 3 to 6 'X' characters.
+  # a unique filename. This template should end with 6 'X' characters.
   # The default template is 'rb_file_temp_XXXXXX'. In this case the temporary
   # file lives in the directory where it was created.
   #
@@ -64,14 +64,15 @@ class File::Temp < File
     else
       begin
         omask = File.umask(077)
-        ptr = FFI::MemoryPointer.from_string(template)
-        str = mktemp(ptr)
+        full_template = File.join(directory, template)
+        ptr = FFI::MemoryPointer.from_string(full_template)
+        fd = mkstemp(ptr)
 
-        if str.nil? || str.empty?
-          raise SystemCallError.new('mktemp', FFI.errno)
+        if fd < 0
+          raise SystemCallError.new('mkstemp', FFI.errno)
         end
 
-        @path = File.join(directory, ptr.read_string)
+        @path = ptr.read_string
       ensure
         File.umask(omask)
       end
@@ -79,11 +80,7 @@ class File::Temp < File
 
     options[:mode] ||= 'wb+'
 
-    if delete
-      super(fd, **options)
-    else
-      super(@path, **options)
-    end
+    super(fd, **options)
   end
 
   # The close method was overridden to ensure the internal file pointer that we
@@ -104,6 +101,6 @@ class File::Temp < File
   # Note that a file is not actually generated on the filesystem.
   #
   def self.temp_name
-    tmpnam(nil) << '.tmp'
+    File.join(TMPDIR, "tmp.#{SecureRandom.hex(8)}.tmp")
   end
 end
