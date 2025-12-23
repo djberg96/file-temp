@@ -40,7 +40,7 @@ RSpec.describe File::Temp do
 
   context 'constants' do
     example 'library version is set to expected value' do
-      expect(File::Temp::VERSION).to eq('1.7.2')
+      expect(File::Temp::VERSION).to eq('1.7.3')
       expect(File::Temp::VERSION).to be_frozen
     end
 

@@ -62,7 +62,7 @@ should not see it.
 Apache-2.0
 
 ## Copyright
-(C) 2007-2023 Daniel J. Berger
+(C) 2007-2025 Daniel J. Berger
 All Rights Reserved
 
 ## Warranty

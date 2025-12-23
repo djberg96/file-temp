@@ -1,3 +1,7 @@
+## 1.7.3 - 23-Dec-2025
+* Internal refactoring, replace mktemp with mkstemp.
+* Internal refactoring, replace tmpnam with Ruby's SecureRandom.
+
 ## 1.7.2 - 11-Jul-2023
 * Fixed a bug in the Windows version where it would sometimes fail.
 * Dropped JRuby from the test matrix for now because of a bug.
