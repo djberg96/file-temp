@@ -105,8 +105,7 @@ RSpec.describe File::Temp do
     end
 
     example 'an error is raised if a custom template is invalid' do
-      skip 'skipped on this platform' if osx || bsd
-      expect{ described_class.new(:delete => false, :template => 'xx') }.to raise_error(Errno::EINVAL)
+      expect{ described_class.new(:delete => false, :template => 'xx') }.to raise_error(ArgumentError, /template must end with 6/)
     end
   end
 
